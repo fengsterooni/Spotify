@@ -1,6 +1,8 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +14,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,9 @@ public class SearchFragment extends Fragment {
     private ArtistsPager results;
     private ArtistAdapter artistAdapter;
     private ArrayList<Artist> artists;
+    static final String STRING_ARTISTS = "string_artists";
+    private String mArtistsString;
+    private ImageView mImageLogo;
     Context context;
 
     public SearchFragment() {
@@ -43,18 +50,26 @@ public class SearchFragment extends Fragment {
         spotify = api.getService();
         artists = new ArrayList<>();
         context = getActivity();
+
+        artistAdapter = new ArtistAdapter(context, artists);
+
+        if (savedInstanceState != null) {
+            mArtistsString = savedInstanceState.getString(STRING_ARTISTS);
+            if (mArtistsString != null) {
+                searchArtists();
+            }
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        artistAdapter = new ArtistAdapter(context, artists);
-
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
         mListView = (ListView) rootView.findViewById(R.id.listview_artists);
         mListView.setAdapter(artistAdapter);
+        mImageLogo = (ImageView) rootView.findViewById(R.id.logo);
 
         return rootView;
     }
@@ -70,7 +85,14 @@ public class SearchFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Artist> artists) {
             artistAdapter.clear();
-            artistAdapter.addAll(artists);
+            if (artists.size() > 0) {
+                mImageLogo.setVisibility(View.GONE);
+                artistAdapter.addAll(artists);
+            } else {
+                Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
+                if (mImageLogo.getVisibility() == View.GONE)
+                    mImageLogo.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -90,7 +112,8 @@ public class SearchFragment extends Fragment {
                     @Override
                     public boolean onQueryTextSubmit(String queryString) {
                         // Get the query string from searchView
-                        new SearchArtistsTask().execute(queryString);
+                        mArtistsString = queryString;
+                        searchArtists();
                         return true;
                     }
 
@@ -106,4 +129,23 @@ public class SearchFragment extends Fragment {
         }
     }
 
+    private void searchArtists() {
+        if (!isNetworkAvailable())
+            Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
+        else
+            new SearchArtistsTask().execute(mArtistsString);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(STRING_ARTISTS, mArtistsString);
+        super.onSaveInstanceState(outState);
+    }
+
+    public Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
 }

@@ -13,6 +13,7 @@ public class TopTrackActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_track);
+
         String artistID = getIntent().getStringExtra("id");
         if (savedInstanceState == null) {
             fragment = TopTrackActivityFragment.newInstatnce(artistID);

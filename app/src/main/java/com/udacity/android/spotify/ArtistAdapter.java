@@ -49,7 +49,8 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
         viewHolder.name.setText(artist.name);
         viewHolder.profileImage.setImageResource(android.R.color.transparent);
         //viewHolder.profileImage.setTag(artist);
-        Picasso.with(getContext()).load(artist.images.get(0).url).into(viewHolder.profileImage);
+        if (artist.images.size() > 0)
+            Picasso.with(getContext()).load(artist.images.get(0).url).into(viewHolder.profileImage);
 
         viewHolder.name.setOnClickListener(new View.OnClickListener() {
             @Override

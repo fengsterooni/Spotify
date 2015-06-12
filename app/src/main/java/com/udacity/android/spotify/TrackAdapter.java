@@ -49,8 +49,9 @@ public class TrackAdapter extends ArrayAdapter<Track> {
         viewHolder.albumName.setText(track.album.name);
         viewHolder.trackName.setText(track.name);
         viewHolder.profileImage.setImageResource(android.R.color.transparent);
-        //viewHolder.profileImage.setTag(track.album.images.get(0).url);
-        Picasso.with(getContext()).load(track.album.images.get(0).url).into(viewHolder.profileImage);
+
+        if (track.album.images.size() > 0)
+            Picasso.with(getContext()).load(track.album.images.get(0).url).into(viewHolder.profileImage);
 
         return convertView;
     }
