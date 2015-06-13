@@ -21,6 +21,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
@@ -29,13 +31,14 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 public class SearchFragment extends Fragment {
     private SpotifyApi api;
     private SpotifyService spotify;
-    private ListView mListView;
+    @InjectView(R.id.listview_artists)
+    ListView mListView;
     private ArtistsPager results;
     private ArtistAdapter artistAdapter;
     private ArrayList<Artist> artists;
     static final String STRING_ARTISTS = "string_artists";
     private String mArtistsString;
-    private ImageView mImageLogo;
+    @InjectView(R.id.logo) ImageView mImageLogo;
     Context context;
 
     public SearchFragment() {
@@ -67,10 +70,8 @@ public class SearchFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
-        mListView = (ListView) rootView.findViewById(R.id.listview_artists);
+        ButterKnife.inject(this, rootView);
         mListView.setAdapter(artistAdapter);
-        mImageLogo = (ImageView) rootView.findViewById(R.id.logo);
-
         return rootView;
     }
 
@@ -122,7 +123,6 @@ public class SearchFragment extends Fragment {
                         return false;
                     }
                 });
-
 
             default:
                 return super.onOptionsItemSelected(item);

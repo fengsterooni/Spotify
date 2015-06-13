@@ -12,20 +12,20 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import kaaes.spotify.webapi.android.models.Track;
 
 public class TrackAdapter extends ArrayAdapter<Track> {
     Context mContext;
 
     static class ViewHolder {
-        ImageView profileImage;
-        TextView albumName;
-        TextView trackName;
+        @InjectView(R.id.image)ImageView profileImage;
+        @InjectView(R.id.albumName)TextView albumName;
+        @InjectView(R.id.trackName)TextView trackName;
 
         ViewHolder(View view) {
-            profileImage = (ImageView) view.findViewById(R.id.image);
-            albumName = (TextView) view.findViewById(R.id.albumName);
-            trackName = (TextView) view.findViewById(R.id.trackName);
+            ButterKnife.inject(this, view);
         }
     }
 

@@ -13,6 +13,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import kaaes.spotify.webapi.android.models.Artist;
 
 public class ArtistAdapter extends ArrayAdapter<Artist> {
@@ -20,12 +22,11 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
     String mID;
 
     static class ViewHolder {
-        ImageView profileImage;
-        TextView name;
+        @InjectView(R.id.image)ImageView profileImage;
+        @InjectView(R.id.name)TextView name;
 
         ViewHolder(View view) {
-            profileImage = (ImageView) view.findViewById(R.id.image);
-            name = (TextView) view.findViewById(R.id.name);
+            ButterKnife.inject(this, view);
         }
     }
 
