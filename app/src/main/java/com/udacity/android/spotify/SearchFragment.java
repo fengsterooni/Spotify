@@ -3,7 +3,6 @@ package com.udacity.android.spotify;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -27,6 +26,9 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class SearchFragment extends Fragment {
     private SpotifyApi api;
@@ -75,28 +77,6 @@ public class SearchFragment extends Fragment {
         return rootView;
     }
 
-
-    public class SearchArtistsTask extends AsyncTask<String, Void, List<Artist>> {
-        @Override
-        protected List<Artist> doInBackground(String... params) {
-            results = spotify.searchArtists(params[0]);
-            return results.artists.items;
-        }
-
-        @Override
-        protected void onPostExecute(List<Artist> artists) {
-            artistAdapter.clear();
-            if (artists.size() > 0) {
-                mImageLogo.setVisibility(View.GONE);
-                artistAdapter.addAll(artists);
-            } else {
-                Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
-                if (mImageLogo.getVisibility() == View.GONE)
-                    mImageLogo.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -130,10 +110,43 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchArtists() {
-        if (!isNetworkAvailable())
+        if (!isNetworkAvailable()) {
             Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
-        else
-            new SearchArtistsTask().execute(mArtistsString);
+        }
+        else {
+            spotify.searchArtists(mArtistsString, new Callback<ArtistsPager>() {
+                @Override
+                public void success(final ArtistsPager artistsPager, Response response) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // showArtists(artistsPager.artists.items);
+                            List<Artist> artistList = artistsPager.artists.items;
+                            artistAdapter.clear();
+                            if (artistList.size() > 0) {
+                                mImageLogo.setVisibility(View.GONE);
+                                artistAdapter.addAll(artistList);
+                            } else {
+                                Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
+                                if (mImageLogo.getVisibility() == View.GONE)
+                                    mImageLogo.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void failure(final RetrofitError error) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // showErrorMessage(error.getMessage());
+                            Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
     }
 
     @Override

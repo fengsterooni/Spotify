@@ -1,7 +1,6 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,11 +19,16 @@ import butterknife.InjectView;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
+import kaaes.spotify.webapi.android.models.Tracks;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class TopTrackActivityFragment extends Fragment {
     private SpotifyApi api;
     private SpotifyService spotify;
-    @InjectView(R.id.listview_tracks)ListView mListView;
+    @InjectView(R.id.listview_tracks)
+    ListView mListView;
     private TrackAdapter trackAdapter;
     private ArrayList<Track> tracks;
     static final String STRING_TRACKS = "string_tracks";
@@ -54,7 +57,7 @@ public class TopTrackActivityFragment extends Fragment {
         context = getActivity();
 
         if (savedInstanceState == null || artist != savedInstanceState.getString(STRING_ARTIST)) {
-            new TopTrackTask().execute(artist);
+            searchTopTracks();
         } else {
             tracks.clear();
             tracks = (ArrayList<Track>) savedInstanceState.getSerializable(STRING_TRACKS);
@@ -72,29 +75,36 @@ public class TopTrackActivityFragment extends Fragment {
         return view;
     }
 
-    public class TopTrackTask extends AsyncTask<String, Void, List<Track>> {
-        @Override
-        protected List<Track> doInBackground(String... params) {
-            Map<String, Object> options = new HashMap<>();
-            options.put(spotify.COUNTRY, Locale.getDefault().getCountry());
-            return spotify.getArtistTopTrack(params[0], options).tracks;
-        }
-
-        @Override
-        protected void onPostExecute(List<Track> allTracks) {
-            trackAdapter.clear();
-            if (allTracks.size() > 0) {
-                tracks.addAll(allTracks);
-            }
-            else
-                Toast.makeText(context, "No tracks found. Please check other artist.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(STRING_ARTIST, artist);
         outState.putSerializable(STRING_TRACKS, tracks);
         super.onSaveInstanceState(outState);
+    }
+
+    private void searchTopTracks() {
+        Map<String, Object> options = new HashMap<>();
+        options.put(spotify.COUNTRY, Locale.getDefault().getCountry());
+        spotify.getArtistTopTrack(artist, options, new Callback<Tracks>() {
+            @Override
+            public void success(final Tracks tracks, Response response) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        trackAdapter.clear();
+                        if (tracks.tracks.size() > 0) {
+                            trackAdapter.addAll(tracks.tracks);
+                        } else {
+                            Toast.makeText(context, "No tracks found. Please check other artist.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
