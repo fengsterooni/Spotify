@@ -35,12 +35,12 @@ public class SearchFragment extends Fragment {
     private SpotifyService spotify;
     @InjectView(R.id.listview_artists)
     ListView mListView;
-    private ArtistsPager results;
     private ArtistAdapter artistAdapter;
-    private ArrayList<Artist> artists;
+    private ArrayList<SpotifyArtist> artists;
     static final String STRING_ARTISTS = "string_artists";
     private String mArtistsString;
-    @InjectView(R.id.logo) ImageView mImageLogo;
+    @InjectView(R.id.logo)
+    ImageView mImageLogo;
     Context context;
 
     public SearchFragment() {
@@ -56,13 +56,9 @@ public class SearchFragment extends Fragment {
         artists = new ArrayList<>();
         context = getActivity();
 
-        artistAdapter = new ArtistAdapter(context, artists);
-
         if (savedInstanceState != null) {
-            mArtistsString = savedInstanceState.getString(STRING_ARTISTS);
-            if (mArtistsString != null) {
-                searchArtists();
-            }
+            artists.clear();
+            artists = savedInstanceState.getParcelableArrayList(STRING_ARTISTS);
         }
     }
 
@@ -73,7 +69,12 @@ public class SearchFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.inject(this, rootView);
+
+        artistAdapter = new ArtistAdapter(context, artists);
         mListView.setAdapter(artistAdapter);
+        if (savedInstanceState != null)
+            mImageLogo.setVisibility(View.GONE);
+
         return rootView;
     }
 
@@ -82,7 +83,6 @@ public class SearchFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_search, menu);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -112,25 +112,14 @@ public class SearchFragment extends Fragment {
     private void searchArtists() {
         if (!isNetworkAvailable()) {
             Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             spotify.searchArtists(mArtistsString, new Callback<ArtistsPager>() {
                 @Override
                 public void success(final ArtistsPager artistsPager, Response response) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            // showArtists(artistsPager.artists.items);
-                            List<Artist> artistList = artistsPager.artists.items;
-                            artistAdapter.clear();
-                            if (artistList.size() > 0) {
-                                mImageLogo.setVisibility(View.GONE);
-                                artistAdapter.addAll(artistList);
-                            } else {
-                                Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
-                                if (mImageLogo.getVisibility() == View.GONE)
-                                    mImageLogo.setVisibility(View.VISIBLE);
-                            }
+                            showArtists(artistsPager.artists.items);
                         }
                     });
                 }
@@ -149,9 +138,28 @@ public class SearchFragment extends Fragment {
         }
     }
 
+    private void showArtists(List<Artist> items) {
+        artistAdapter.clear();
+        if (items.size() > 0) {
+            mImageLogo.setVisibility(View.GONE);
+
+            String image = null;
+            for (Artist artist : items) {
+                if (artist.images.size() > 0) {
+                    image = artist.images.get(0).url;
+                }
+                artistAdapter.add(new SpotifyArtist(artist.id, artist.name, image));
+            }
+        } else {
+            Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
+            if (mImageLogo.getVisibility() == View.GONE)
+                mImageLogo.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(STRING_ARTISTS, mArtistsString);
+        outState.putParcelableArrayList(STRING_ARTISTS, artists);
         super.onSaveInstanceState(outState);
     }
 

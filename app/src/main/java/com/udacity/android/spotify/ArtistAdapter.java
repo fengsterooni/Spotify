@@ -15,29 +15,30 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import kaaes.spotify.webapi.android.models.Artist;
 
-public class ArtistAdapter extends ArrayAdapter<Artist> {
+public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
     Context mContext;
     String mID;
 
     static class ViewHolder {
-        @InjectView(R.id.image)ImageView profileImage;
-        @InjectView(R.id.name)TextView name;
+        @InjectView(R.id.image)
+        ImageView profileImage;
+        @InjectView(R.id.name)
+        TextView name;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
         }
     }
 
-    public ArtistAdapter(Context context, List<Artist> artists) {
+    public ArtistAdapter(Context context, List<SpotifyArtist> artists) {
         super(context, android.R.layout.simple_list_item_1, artists);
         mContext = context;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final Artist artist = getItem(position);
+        final SpotifyArtist artist = getItem(position);
         final ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_artist, parent, false);
@@ -49,9 +50,9 @@ public class ArtistAdapter extends ArrayAdapter<Artist> {
 
         viewHolder.name.setText(artist.name);
         viewHolder.profileImage.setImageResource(android.R.color.transparent);
-        //viewHolder.profileImage.setTag(artist);
-        if (artist.images.size() > 0)
-            Picasso.with(getContext()).load(artist.images.get(0).url).into(viewHolder.profileImage);
+
+        if (artist.image != null)
+            Picasso.with(getContext()).load(artist.image).into(viewHolder.profileImage);
 
         viewHolder.name.setOnClickListener(new View.OnClickListener() {
             @Override
