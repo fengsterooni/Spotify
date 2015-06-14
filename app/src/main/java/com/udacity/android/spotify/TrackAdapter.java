@@ -14,9 +14,8 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import kaaes.spotify.webapi.android.models.Track;
 
-public class TrackAdapter extends ArrayAdapter<Track> {
+public class TrackAdapter extends ArrayAdapter<SpotifyTrack> {
     Context mContext;
 
     static class ViewHolder {
@@ -29,14 +28,14 @@ public class TrackAdapter extends ArrayAdapter<Track> {
         }
     }
 
-    public TrackAdapter(Context context, List<Track> tracks) {
+    public TrackAdapter(Context context, List<SpotifyTrack> tracks) {
         super(context, android.R.layout.simple_list_item_1, tracks);
         mContext = context;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final Track track = getItem(position);
+        final SpotifyTrack track = getItem(position);
         final ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_track, parent, false);
@@ -46,12 +45,12 @@ public class TrackAdapter extends ArrayAdapter<Track> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.albumName.setText(track.album.name);
-        viewHolder.trackName.setText(track.name);
+        viewHolder.albumName.setText(track.albumName);
+        viewHolder.trackName.setText(track.trackName);
         viewHolder.profileImage.setImageResource(android.R.color.transparent);
 
-        if (track.album.images.size() > 0)
-            Picasso.with(getContext()).load(track.album.images.get(0).url).into(viewHolder.profileImage);
+        if (track.profileImage != null)
+            Picasso.with(getContext()).load(track.profileImage).into(viewHolder.profileImage);
 
         return convertView;
     }

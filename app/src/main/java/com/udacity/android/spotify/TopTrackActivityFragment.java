@@ -30,7 +30,7 @@ public class TopTrackActivityFragment extends Fragment {
     @InjectView(R.id.listview_tracks)
     ListView mListView;
     private TrackAdapter trackAdapter;
-    private ArrayList<Track> tracks;
+    private ArrayList<SpotifyTrack> tracks;
     static final String STRING_TRACKS = "string_tracks";
     static final String STRING_ARTIST = "string_artist";
     String artist;
@@ -60,7 +60,7 @@ public class TopTrackActivityFragment extends Fragment {
             searchTopTracks();
         } else {
             tracks.clear();
-            tracks = (ArrayList<Track>) savedInstanceState.getSerializable(STRING_TRACKS);
+            tracks = savedInstanceState.getParcelableArrayList(STRING_TRACKS);
         }
     }
 
@@ -78,12 +78,12 @@ public class TopTrackActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(STRING_ARTIST, artist);
-        outState.putSerializable(STRING_TRACKS, tracks);
+        outState.putParcelableArrayList(STRING_TRACKS, tracks);
         super.onSaveInstanceState(outState);
     }
 
     private void searchTopTracks() {
-        Map<String, Object> options = new HashMap<>();
+        final Map<String, Object> options = new HashMap<>();
         options.put(spotify.COUNTRY, Locale.getDefault().getCountry());
         spotify.getArtistTopTrack(artist, options, new Callback<Tracks>() {
             @Override
@@ -93,7 +93,13 @@ public class TopTrackActivityFragment extends Fragment {
                     public void run() {
                         trackAdapter.clear();
                         if (tracks.tracks.size() > 0) {
-                            trackAdapter.addAll(tracks.tracks);
+                            String image = null;
+                            for (Track track : tracks.tracks) {
+                                if (track.album.images.size() > 0)
+                                    image = track.album.images.get(0).url;
+
+                                trackAdapter.add(new SpotifyTrack(track.id, track.name, track.album.name, image));
+                            }
                         } else {
                             Toast.makeText(context, "No tracks found. Please check other artist.", Toast.LENGTH_SHORT).show();
                         }

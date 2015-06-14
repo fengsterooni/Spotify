@@ -19,6 +19,7 @@ import butterknife.InjectView;
 public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
     Context mContext;
     String mID;
+    String mName;
 
     static class ViewHolder {
         @InjectView(R.id.image)
@@ -58,6 +59,7 @@ public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
             @Override
             public void onClick(View v) {
                 mID = artist.id;
+                mName = artist.name;
                 getTopTracks();
             }
         });
@@ -66,6 +68,7 @@ public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
             @Override
             public void onClick(View v) {
                 mID = artist.id;
+                mName = artist.name;
                 getTopTracks();
             }
         });
@@ -80,7 +83,7 @@ public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
     private void getTopTracks() {
         Intent intent = new Intent(mContext, TopTrackActivity.class);
         intent.putExtra("id", mID);
+        intent.putExtra("artist_name", mName);
         mContext.startActivity(intent);
     }
-
 }

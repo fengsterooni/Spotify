@@ -1,7 +1,9 @@
 package com.udacity.android.spotify;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,6 +17,16 @@ public class TopTrackActivity extends ActionBarActivity {
         setContentView(R.layout.activity_top_track);
 
         String artistID = getIntent().getStringExtra("id");
+
+        // get artist name and set it as sub title on the action bar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            Intent intent = getIntent();
+            String artistName = intent.getStringExtra("artist_name");
+            if (artistName != null) {
+                getSupportActionBar().setSubtitle(artistName);
+            }
+        }
+
         if (savedInstanceState == null) {
             fragment = TopTrackActivityFragment.newInstatnce(artistID);
             getSupportFragmentManager().beginTransaction()
@@ -38,6 +50,10 @@ public class TopTrackActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if(id == android.R.id.home){
+            super.onBackPressed();
+            return true;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
