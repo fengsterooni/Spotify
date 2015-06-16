@@ -1,7 +1,6 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
-    Context mContext;
-    String mID;
-    String mName;
 
     static class ViewHolder {
         @InjectView(R.id.image)
@@ -34,7 +30,6 @@ public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
 
     public ArtistAdapter(Context context, List<SpotifyArtist> artists) {
         super(context, android.R.layout.simple_list_item_1, artists);
-        mContext = context;
     }
 
     @Override
@@ -55,35 +50,11 @@ public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
         if (artist.image != null)
             Picasso.with(getContext()).load(artist.image).into(viewHolder.profileImage);
 
-        viewHolder.name.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mID = artist.id;
-                mName = artist.name;
-                getTopTracks();
-            }
-        });
-
-        viewHolder.profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mID = artist.id;
-                mName = artist.name;
-                getTopTracks();
-            }
-        });
         return convertView;
     }
 
     @Override
     public int getCount() {
         return super.getCount();
-    }
-
-    private void getTopTracks() {
-        Intent intent = new Intent(mContext, TopTrackActivity.class);
-        intent.putExtra("id", mID);
-        intent.putExtra("artist_name", mName);
-        mContext.startActivity(intent);
     }
 }

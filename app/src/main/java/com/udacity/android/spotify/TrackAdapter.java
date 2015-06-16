@@ -1,8 +1,6 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +16,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 public class TrackAdapter extends ArrayAdapter<SpotifyTrack> {
-    Context mContext;
-    SpotifyTrack mTrack;
-    // int mTrack;
-    List<SpotifyTrack> mTracks;
 
     static class ViewHolder {
         @InjectView(R.id.image)ImageView profileImage;
@@ -35,8 +29,6 @@ public class TrackAdapter extends ArrayAdapter<SpotifyTrack> {
 
     public TrackAdapter(Context context, List<SpotifyTrack> tracks) {
         super(context, android.R.layout.simple_list_item_1, tracks);
-        mContext = context;
-        mTracks = tracks;
     }
 
     @Override
@@ -58,36 +50,6 @@ public class TrackAdapter extends ArrayAdapter<SpotifyTrack> {
         if (track.profileImage != null)
             Picasso.with(getContext()).load(track.profileImage).into(viewHolder.profileImage);
 
-        viewHolder.trackName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTrack = track;
-                playTrack();
-            }
-        });
-
-        viewHolder.albumName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTrack = track;
-                playTrack();
-            }
-        });
-
-        viewHolder.profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTrack = track;
-                playTrack();
-            }
-        });
-
         return convertView;
-    }
-
-    private void playTrack() {
-        FragmentManager fm = ((FragmentActivity) mContext).getSupportFragmentManager();
-        PlayerDialog playerDialog = PlayerDialog.newInstance(mTrack);
-        playerDialog.show(fm, "");
     }
 }

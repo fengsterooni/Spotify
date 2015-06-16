@@ -10,18 +10,20 @@ import android.view.MenuItem;
 
 public class TopTrackActivity extends ActionBarActivity {
     TopTrackActivityFragment fragment;
+    public final static String ARTIST_ID = "ARTIST_ID";
+    public final static String ARTIST_NAME = "ARTIST_NAME";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_track);
 
-        String artistID = getIntent().getStringExtra("id");
+        String artistID = getIntent().getStringExtra(ARTIST_ID);
 
         // get artist name and set it as sub title on the action bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             Intent intent = getIntent();
-            String artistName = intent.getStringExtra("artist_name");
+            String artistName = intent.getStringExtra(ARTIST_NAME);
             if (artistName != null) {
                 getSupportActionBar().setSubtitle(artistName);
             }

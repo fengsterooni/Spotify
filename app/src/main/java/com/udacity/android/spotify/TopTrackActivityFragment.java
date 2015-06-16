@@ -3,9 +3,11 @@ package com.udacity.android.spotify;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -71,6 +73,15 @@ public class TopTrackActivityFragment extends Fragment {
         ButterKnife.inject(this, view);
         trackAdapter = new TrackAdapter(context, tracks);
         mListView.setAdapter(trackAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SpotifyTrack track = tracks.get(position);
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                PlayerDialog playerDialog = PlayerDialog.newInstance(track);
+                playerDialog.show(fm, "Player");
+            }
+        });
         return view;
     }
 

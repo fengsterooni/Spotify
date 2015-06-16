@@ -1,6 +1,7 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -11,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -70,6 +72,16 @@ public class SearchFragment extends Fragment {
 
         artistAdapter = new ArtistAdapter(context, artists);
         mListView.setAdapter(artistAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SpotifyArtist artist = artists.get(position);
+                Intent intent = new Intent(context, TopTrackActivity.class);
+                intent.putExtra(TopTrackActivity.ARTIST_ID, artist.id);
+                intent.putExtra(TopTrackActivity.ARTIST_NAME, artist.name);
+                startActivity(intent);
+            }
+        });
         if (savedInstanceState != null)
             mImageLogo.setVisibility(View.GONE);
 
