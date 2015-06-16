@@ -1,8 +1,6 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -110,7 +108,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchArtists() {
-        if (!isNetworkAvailable()) {
+        if (!Utility.isNetworkAvailable(context)) {
             Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
         } else {
             spotify.searchArtists(mArtistsString, new Callback<ArtistsPager>() {
@@ -161,12 +159,5 @@ public class SearchFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(STRING_ARTISTS, artists);
         super.onSaveInstanceState(outState);
-    }
-
-    public Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 }

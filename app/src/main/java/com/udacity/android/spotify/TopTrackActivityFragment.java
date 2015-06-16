@@ -71,7 +71,6 @@ public class TopTrackActivityFragment extends Fragment {
         ButterKnife.inject(this, view);
         trackAdapter = new TrackAdapter(context, tracks);
         mListView.setAdapter(trackAdapter);
-
         return view;
     }
 
@@ -83,34 +82,41 @@ public class TopTrackActivityFragment extends Fragment {
     }
 
     private void searchTopTracks() {
-        final Map<String, Object> options = new HashMap<>();
-        options.put(spotify.COUNTRY, Locale.getDefault().getCountry());
-        spotify.getArtistTopTrack(artist, options, new Callback<Tracks>() {
-            @Override
-            public void success(final Tracks tracks, Response response) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        trackAdapter.clear();
-                        if (tracks.tracks.size() > 0) {
-                            String image = null;
-                            for (Track track : tracks.tracks) {
-                                if (track.album.images.size() > 0)
-                                    image = track.album.images.get(0).url;
+        if (!Utility.isNetworkAvailable(context)) {
+            Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
+        } else {
+            final Map<String, Object> options = new HashMap<>();
+            options.put(spotify.COUNTRY, Locale.getDefault().getCountry());
+            spotify.getArtistTopTrack(artist, options, new Callback<Tracks>() {
+                @Override
+                public void success(final Tracks tracks, Response response) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            trackAdapter.clear();
+                            if (tracks.tracks.size() > 0) {
+                                String image = null;
+                                for (Track track : tracks.tracks) {
+                                    if (track.album.images.size() > 0)
+                                        image = track.album.images.get(0).url;
 
-                                trackAdapter.add(new SpotifyTrack(track.id, track.name, track.album.name, image));
+                                    SpotifyTrack newTrack = new SpotifyTrack(track.id, track.artists.get(0).name,
+                                            track.name, track.album.name, image, track.preview_url);
+
+                                    trackAdapter.add(newTrack);
+                                }
+                            } else {
+                                Toast.makeText(context, "No tracks found. Please check other artist.", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Toast.makeText(context, "No tracks found. Please check other artist.", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            @Override
-            public void failure(RetrofitError error) {
-                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }
