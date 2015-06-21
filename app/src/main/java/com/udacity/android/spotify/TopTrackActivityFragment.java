@@ -76,9 +76,9 @@ public class TopTrackActivityFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SpotifyTrack track = tracks.get(position);
+                // SpotifyTrack track = tracks.get(position);
                 FragmentManager fm = getActivity().getSupportFragmentManager();
-                PlayerDialog playerDialog = PlayerDialog.newInstance(track);
+                PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, position);
                 playerDialog.show(fm, "Player");
             }
         });
