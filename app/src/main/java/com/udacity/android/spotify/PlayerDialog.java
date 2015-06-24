@@ -7,9 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -39,10 +37,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     static SpotifyTrack track;
     static int position;
     static int playing;
-    static MediaPlayer mediaPlayer;
-    double length;
-    double progress;
-    private Handler handler = new Handler();
     Activity activity;
     MusicPlayService musicPlayService;
 
@@ -66,7 +60,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     TextView trackTime;
     @InjectView(R.id.progressBar)
     ProgressBar progressBar;
-
 
     public PlayerDialog() {
         // Required empty public constructor
@@ -147,7 +140,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
                 if (position != playing) {
                     btnPlay.setImageResource(android.R.drawable.ic_media_play);
-                    progress = 0;
                     elapse.setText(String.format("%02d:%02d", 0, 0));
                     trackTime.setText(String.format("%02d:%02d", 0, 0));
                     progressBar.setProgress(0);
@@ -164,7 +156,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
                 if (position != playing) {
                     btnPlay.setImageResource(android.R.drawable.ic_media_play);
-                    progress = 0;
                     elapse.setText(String.format("%02d:%02d", 0, 0));
                     trackTime.setText(String.format("%02d:%02d", 0, 0));
                     progressBar.setProgress(0);
@@ -191,7 +182,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         musicPlayService = ((MusicPlayService.LocalBinder) service).getService();
-        // musicPlayService.setCallback(this);
     }
 
     @Override
