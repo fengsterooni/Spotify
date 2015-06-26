@@ -90,11 +90,11 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
         if (musicPlayService != null) {
             context.unbindService(this);
         }
-        super.onDestroy();
     }
 
     @Override
@@ -122,39 +122,20 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             @Override
             public void onClick(View v) {
                 playTrack();
-                playing = position;
             }
         });
 
         btnPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                position = (position > 0) ? position - 1 : tracks.size() - 1;
-                track = tracks.get(position);
-                updateTrack();
-
-                if (position != playing) {
-                    btnPlay.setImageResource(android.R.drawable.ic_media_play);
-                    elapse.setText(String.format("%02d:%02d", 0, 0));
-                    trackTime.setText(String.format("%02d:%02d", 0, 0));
-                    progressBar.setProgress(0);
-                }
+                selectPrev();
             }
         });
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                position = (position < tracks.size() - 1) ? position + 1 : 0;
-                track = tracks.get(position);
-                updateTrack();
-
-                if (position != playing) {
-                    btnPlay.setImageResource(android.R.drawable.ic_media_play);
-                    elapse.setText(String.format("%02d:%02d", 0, 0));
-                    trackTime.setText(String.format("%02d:%02d", 0, 0));
-                    progressBar.setProgress(0);
-                }
+                selectNext();
             }
         });
 
@@ -166,11 +147,32 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         albumName.setText(" " + track.albumName);
         trackName.setText(" " + track.trackName);
         Picasso.with(getActivity()).load(track.profileImage).into(image);
+
+        if (position != playing) {
+            btnPlay.setImageResource(android.R.drawable.ic_media_play);
+            elapse.setText(String.format("%02d:%02d", 0, 0));
+            trackTime.setText(String.format("%02d:%02d", 0, 0));
+            progressBar.setProgress(0);
+        }
     }
 
     public void playTrack() {
-        if (musicPlayService != null)
+        if (musicPlayService != null) {
             musicPlayService.playTrack(track);
+            playing = position;
+        }
+    }
+
+    public void selectPrev() {
+        position = (position > 0) ? position - 1 : tracks.size() - 1;
+        track = tracks.get(position);
+        updateTrack();
+    }
+
+    public void selectNext() {
+        position = (position < tracks.size() - 1) ? position + 1 : 0;
+        track = tracks.get(position);
+        updateTrack();
     }
 
     // http://stackoverflow.com/questions/12433397/android-dialogfragment-disappears-after-orientation-change

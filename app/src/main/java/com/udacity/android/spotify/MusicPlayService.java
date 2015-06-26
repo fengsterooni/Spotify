@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 import java.io.IOException;
@@ -22,8 +23,8 @@ public class MusicPlayService extends Service {
     public static final String TRACK_PROGRESS = "TRACK_PROGRESS";
     public static final String TRACK_DURATION = "TRACK_DURATION";
     public static final String TRACK_STATUS = "TRACK_STATUS";
-    public static final String PLAYING_TRACK = "PLAYING_TRACK";
     public static final int NOTIFICATION_ID = 101;
+    boolean finished = false;
 
     public MusicPlayService() {
 
@@ -39,11 +40,12 @@ public class MusicPlayService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopForeground(true);
+        mTrack = null;
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        stopForeground(true);
     }
 
     @Override
@@ -87,10 +89,9 @@ public class MusicPlayService extends Service {
                 intent.putExtra(TRACK_PROGRESS, duration);
                 intent.putExtra(TRACK_DURATION, duration);
                 broadcastManager.sendBroadcast(intent);
+                finished = true;
             }
         });
-
-        startForeground(NOTIFICATION_ID, buildNotification());
     }
 
     public void playTrack(SpotifyTrack track) {
@@ -107,6 +108,11 @@ public class MusicPlayService extends Service {
 
         } else {
             if (track == mTrack) {
+                // If track is completed, and user wanted to play again, reset to update progress again
+                if (finished) {
+                    handler.postDelayed(UpdateTrack, 100);
+                    finished = false;
+                }
                 // Resume the same track after pause, no need to load new track
                 mediaPlayer.start();
             } else {
@@ -115,6 +121,7 @@ public class MusicPlayService extends Service {
                 loadAndPlay(track);
             }
         }
+        startForeground(NOTIFICATION_ID, buildNotification());
     }
 
     private Runnable UpdateTrack = new Runnable() {
@@ -133,8 +140,15 @@ public class MusicPlayService extends Service {
     };
 
     private Notification buildNotification() {
-        Notification notification = new Notification();
-        // notification.
-        return notification;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Notification!")
+                .setContentText("Notification2222")
+                //.setContentIntent(pIntent)
+                ;
+
+        builder.setAutoCancel(true);
+
+        return builder.build();
     }
 }
