@@ -33,8 +33,8 @@ public class TopTrackActivityFragment extends Fragment {
     ListView mListView;
     private TrackAdapter trackAdapter;
     private ArrayList<SpotifyTrack> tracks;
-    static final String STRING_TRACKS = "string_tracks";
-    static final String STRING_ARTIST = "string_artist";
+    static final String STRING_TRACKS = "STRING_TRACKS";
+    static final String STRING_ARTIST = "STRING_ARTIST";
     String artist;
     Context context;
 
@@ -44,8 +44,10 @@ public class TopTrackActivityFragment extends Fragment {
     public static TopTrackActivityFragment newInstatnce(String artist) {
         TopTrackActivityFragment fragment = new TopTrackActivityFragment();
         Bundle args = new Bundle();
-        args.putString("id", artist);
-        fragment.setArguments(args);
+        if (artist != null) {
+            args.putString(TopTrackActivity.ARTIST_ID, artist);
+            fragment.setArguments(args);
+        }
         return fragment;
     }
 
@@ -55,14 +57,17 @@ public class TopTrackActivityFragment extends Fragment {
         tracks = new ArrayList<>();
         api = new SpotifyApi();
         spotify = api.getService();
-        artist = getArguments().getString("id");
-        context = getActivity();
+        Bundle args = getArguments();
+        if (args != null) {
+            artist = args.getString(TopTrackActivity.ARTIST_ID);
+            context = getActivity();
 
-        if (savedInstanceState == null || artist != savedInstanceState.getString(STRING_ARTIST)) {
-            searchTopTracks();
-        } else {
-            tracks.clear();
-            tracks = savedInstanceState.getParcelableArrayList(STRING_TRACKS);
+            if (savedInstanceState == null || artist.equals(savedInstanceState.getString(STRING_ARTIST))) {
+                searchTopTracks();
+            } else {
+                tracks.clear();
+                tracks = savedInstanceState.getParcelableArrayList(STRING_TRACKS);
+            }
         }
     }
 
@@ -76,12 +81,12 @@ public class TopTrackActivityFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // SpotifyTrack track = tracks.get(position);
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, position);
                 playerDialog.show(fm, "Player");
             }
         });
+
         return view;
     }
 

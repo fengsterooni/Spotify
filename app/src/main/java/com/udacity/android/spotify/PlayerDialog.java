@@ -1,6 +1,5 @@
 package com.udacity.android.spotify;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -37,7 +36,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     static SpotifyTrack track;
     static int position;
     static int playing;
-    Activity activity;
+    Context context;
     MusicPlayService musicPlayService;
 
     @InjectView(R.id.artist_name)
@@ -83,33 +82,29 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
         getDialog().getWindow().setLayout(width, height);
 
-        Intent bindIntent = new Intent(activity, MusicPlayService.class);
-        activity.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(activity)
+        Intent bindIntent = new Intent(context, MusicPlayService.class);
+        context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(context)
                 .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_STATUS));
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance(activity).unregisterReceiver(receiver);
-        if (musicPlayService != null) {
-            activity.unbindService(this);
-        }
-    }
-
-    @Override
     public void onDestroy() {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+        if (musicPlayService != null) {
+            context.unbindService(this);
+        }
         super.onDestroy();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = getActivity();
+        context = getActivity().getApplicationContext();
         tracks = getArguments().getParcelableArrayList(TOP_TRACKS);
         position = getArguments().getInt(TRACK_POSITION);
         track = tracks.get(position);
+        setRetainInstance(true);
     }
 
     @Override
@@ -118,7 +113,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        View view = inflater.inflate(R.layout.fragment_player, container);
+        View view = inflater.inflate(R.layout.dialog_player, container);
         ButterKnife.inject(this, view);
 
         updateTrack();
@@ -178,6 +173,14 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             musicPlayService.playTrack(track);
     }
 
+    // http://stackoverflow.com/questions/12433397/android-dialogfragment-disappears-after-orientation-change
+    @Override
+    public void onDestroyView() {
+        if (getDialog() != null && getRetainInstance()) {
+            getDialog().setDismissMessage(null);
+        }
+        super.onDestroyView();
+    }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {

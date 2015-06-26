@@ -1,5 +1,6 @@
 package com.udacity.android.spotify;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -21,6 +22,8 @@ public class MusicPlayService extends Service {
     public static final String TRACK_PROGRESS = "TRACK_PROGRESS";
     public static final String TRACK_DURATION = "TRACK_DURATION";
     public static final String TRACK_STATUS = "TRACK_STATUS";
+    public static final String PLAYING_TRACK = "PLAYING_TRACK";
+    public static final int NOTIFICATION_ID = 101;
 
     public MusicPlayService() {
 
@@ -40,6 +43,7 @@ public class MusicPlayService extends Service {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        stopForeground(true);
     }
 
     @Override
@@ -85,6 +89,8 @@ public class MusicPlayService extends Service {
                 broadcastManager.sendBroadcast(intent);
             }
         });
+
+        startForeground(NOTIFICATION_ID, buildNotification());
     }
 
     public void playTrack(SpotifyTrack track) {
@@ -111,17 +117,24 @@ public class MusicPlayService extends Service {
         }
     }
 
-
     private Runnable UpdateTrack = new Runnable() {
         public void run() {
-            double progress = mediaPlayer.getCurrentPosition();
-            double duration = mediaPlayer.getDuration();
-            Intent intent = new Intent(MEDIA_PLAYER_STATUS);
-            intent.putExtra(TRACK_STATUS, mediaPlayer.isPlaying());
-            intent.putExtra(TRACK_PROGRESS, progress);
-            intent.putExtra(TRACK_DURATION, duration);
-            broadcastManager.sendBroadcast(intent);
-            handler.postDelayed(this, 100);
+            if (mediaPlayer != null) {
+                double progress = mediaPlayer.getCurrentPosition();
+                double duration = mediaPlayer.getDuration();
+                Intent intent = new Intent(MEDIA_PLAYER_STATUS);
+                intent.putExtra(TRACK_STATUS, mediaPlayer.isPlaying());
+                intent.putExtra(TRACK_PROGRESS, progress);
+                intent.putExtra(TRACK_DURATION, duration);
+                broadcastManager.sendBroadcast(intent);
+                handler.postDelayed(this, 100);
+            }
         }
     };
+
+    private Notification buildNotification() {
+        Notification notification = new Notification();
+        // notification.
+        return notification;
+    }
 }

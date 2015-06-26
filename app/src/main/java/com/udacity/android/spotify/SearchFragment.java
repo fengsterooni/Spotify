@@ -1,7 +1,6 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -76,10 +75,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SpotifyArtist artist = artists.get(position);
-                Intent intent = new Intent(context, TopTrackActivity.class);
-                intent.putExtra(TopTrackActivity.ARTIST_ID, artist.id);
-                intent.putExtra(TopTrackActivity.ARTIST_NAME, artist.name);
-                startActivity(intent);
+                ((OnItemSelected) getActivity()).onItemSelected(artist.id, artist.name);
             }
         });
         if (savedInstanceState != null)
@@ -171,5 +167,9 @@ public class SearchFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(STRING_ARTISTS, artists);
         super.onSaveInstanceState(outState);
+    }
+
+    public interface OnItemSelected {
+        void onItemSelected(String artistID, String artistName);
     }
 }

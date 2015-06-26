@@ -32,11 +32,10 @@ public class TopTrackActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
             fragment = TopTrackActivityFragment.newInstatnce(artistID);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_toptrack, fragment)
+                    .add(R.id.fragment_toptrack, fragment)
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,7 +51,7 @@ public class TopTrackActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == android.R.id.home){
+        if (id == android.R.id.home) {
             super.onBackPressed();
             return true;
         }
