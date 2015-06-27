@@ -1,5 +1,6 @@
 package com.udacity.android.spotify;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -74,13 +75,28 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        context = getActivity().getApplicationContext();
+        Bundle args = getArguments();
+        if (args != null) {
+            tracks = args.getParcelableArrayList(TOP_TRACKS);
+            position = args.getInt(TRACK_POSITION);
+            track = tracks.get(position);
+        }
+        setRetainInstance(true);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         // Set Dialog dimensions
         // http://stackoverflow.com/questions/12478520/how-to-set-dialogfragments-width-and-height
         int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
         int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
-        getDialog().getWindow().setLayout(width, height);
+        Dialog dialog = getDialog();
+        if (dialog != null)
+            dialog.getWindow().setLayout(width, height);
 
         Intent bindIntent = new Intent(context, MusicPlayService.class);
         context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
@@ -98,22 +114,9 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        context = getActivity().getApplicationContext();
-        tracks = getArguments().getParcelableArrayList(TOP_TRACKS);
-        position = getArguments().getInt(TRACK_POSITION);
-        track = tracks.get(position);
-        setRetainInstance(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
-        View view = inflater.inflate(R.layout.dialog_player, container);
+        View view = inflater.inflate(R.layout.dialog_player, container, false);
         ButterKnife.inject(this, view);
 
         updateTrack();
@@ -143,16 +146,18 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     }
 
     private void updateTrack() {
-        artistName.setText(" " + track.artistName);
-        albumName.setText(" " + track.albumName);
-        trackName.setText(" " + track.trackName);
-        Picasso.with(getActivity()).load(track.profileImage).into(image);
+        if (track != null) {
+            artistName.setText(" " + track.artistName);
+            albumName.setText(" " + track.albumName);
+            trackName.setText(" " + track.trackName);
+            Picasso.with(getActivity()).load(track.profileImage).into(image);
 
-        if (position != playing) {
-            btnPlay.setImageResource(android.R.drawable.ic_media_play);
-            elapse.setText(String.format("%02d:%02d", 0, 0));
-            trackTime.setText(String.format("%02d:%02d", 0, 0));
-            progressBar.setProgress(0);
+            if (position != playing) {
+                btnPlay.setImageResource(android.R.drawable.ic_media_play);
+                elapse.setText(String.format("%02d:%02d", 0, 0));
+                trackTime.setText(String.format("%02d:%02d", 0, 0));
+                progressBar.setProgress(0);
+            }
         }
     }
 
@@ -222,4 +227,10 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             }
         }
     };
+
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
 }

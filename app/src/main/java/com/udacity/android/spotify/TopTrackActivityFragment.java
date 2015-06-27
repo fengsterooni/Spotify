@@ -1,6 +1,7 @@
 package com.udacity.android.spotify;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -83,7 +84,15 @@ public class TopTrackActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, position);
-                playerDialog.show(fm, "Player");
+
+                if (MainActivity.ismTwoPane())
+                    playerDialog.show(fm, "Player");
+                else {
+                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                    intent.putExtra(PlayerDialog.TOP_TRACKS, tracks);
+                    intent.putExtra(PlayerDialog.TRACK_POSITION, position);
+                    startActivity(intent);
+                }
             }
         });
 

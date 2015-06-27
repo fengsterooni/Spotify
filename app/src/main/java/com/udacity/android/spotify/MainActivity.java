@@ -10,7 +10,11 @@ public class MainActivity extends ActionBarActivity
         implements SearchFragment.OnItemSelected {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String TOPTRACK_TAG = "TOPTRACK";
-    private boolean mTwoPane;
+    private static boolean mTwoPane;
+
+    public static boolean ismTwoPane() {
+        return mTwoPane;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -36,6 +36,10 @@
             android:exported="false" >
         </service>
 
+        <activity
+            android:name=".PlayerActivity"
+            android:label="@string/title_activity_player" >
+        </activity>
     </application>
 
 </manifest>
