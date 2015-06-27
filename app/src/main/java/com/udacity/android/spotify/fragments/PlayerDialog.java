@@ -1,4 +1,4 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.fragments;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -21,6 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.android.spotify.services.MusicPlayService;
+import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -149,10 +152,10 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     private void updateTrack() {
         if (track != null) {
-            artistName.setText(" " + track.artistName);
-            albumName.setText(" " + track.albumName);
-            trackName.setText(" " + track.trackName);
-            Picasso.with(getActivity()).load(track.profileImage).into(image);
+            artistName.setText(" " + track.getArtistName());
+            albumName.setText(" " + track.getAlbumName());
+            trackName.setText(" " + track.getTrackName());
+            Picasso.with(getActivity()).load(track.getProfileImage()).into(image);
 
             if (position != playing) {
                 btnPlay.setImageResource(android.R.drawable.ic_media_play);

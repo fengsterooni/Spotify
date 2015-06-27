@@ -1,4 +1,4 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.models.SpotifyArtist;
 
 import java.util.List;
 
@@ -44,11 +46,11 @@ public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.name.setText(artist.name);
+        viewHolder.name.setText(artist.getName());
         viewHolder.profileImage.setImageResource(android.R.color.transparent);
 
-        if (artist.image != null)
-            Picasso.with(getContext()).load(artist.image).into(viewHolder.profileImage);
+        if (artist.getImage() != null)
+            Picasso.with(getContext()).load(artist.getImage()).into(viewHolder.profileImage);
 
         return convertView;
     }

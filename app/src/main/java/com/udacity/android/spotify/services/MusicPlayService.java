@@ -1,4 +1,4 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.services;
 
 import android.app.Notification;
 import android.app.Service;
@@ -10,6 +10,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+
+import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.io.IOException;
 
@@ -54,13 +57,13 @@ public class MusicPlayService extends Service {
     }
 
     public class LocalBinder extends Binder {
-        MusicPlayService getService() {
+        public MusicPlayService getService() {
             return MusicPlayService.this;
         }
     }
 
     public void loadAndPlay(final SpotifyTrack track) {
-        String url = track.uri;
+        String url = track.getUri();
 
         try {
             mediaPlayer.setDataSource(url);
@@ -143,8 +146,8 @@ public class MusicPlayService extends Service {
         String title = "";
         String text = "";
         if (mTrack != null) {
-            title = mTrack.artistName;
-            text = mTrack.trackName;
+            title = mTrack.getArtistName();
+            text = mTrack.getTrackName();
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)

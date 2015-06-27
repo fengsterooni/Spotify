@@ -1,4 +1,4 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.util.List;
 
@@ -43,12 +45,12 @@ public class TrackAdapter extends ArrayAdapter<SpotifyTrack> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.albumName.setText(track.albumName);
-        viewHolder.trackName.setText(track.trackName);
+        viewHolder.albumName.setText(track.getAlbumName());
+        viewHolder.trackName.setText(track.getTrackName());
         viewHolder.profileImage.setImageResource(android.R.color.transparent);
 
-        if (track.profileImage != null)
-            Picasso.with(getContext()).load(track.profileImage).into(viewHolder.profileImage);
+        if (track.getProfileImage() != null)
+            Picasso.with(getContext()).load(track.getProfileImage()).into(viewHolder.profileImage);
 
         return convertView;
     }

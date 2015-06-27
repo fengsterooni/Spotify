@@ -1,17 +1,29 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class SpotifyArtist implements Parcelable{
-    String id;
-    String name;
-    String image;
+    private String id;
+    private String name;
+    private String image;
 
     public SpotifyArtist(String id, String name, String image) {
         this.id = id;
         this.name = name;
         this.image = image;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override

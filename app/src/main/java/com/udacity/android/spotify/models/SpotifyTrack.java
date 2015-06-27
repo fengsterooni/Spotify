@@ -1,15 +1,15 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class SpotifyTrack implements Parcelable{
-    String id;
-    String artistName;
-    String trackName;
-    String albumName;
-    String profileImage;
-    String uri;
+    private String id;
+    private String artistName;
+    private String trackName;
+    private String albumName;
+    private String profileImage;
+    private String uri;
 
     public SpotifyTrack(String id, String artistName,
                         String trackName, String albumName, String profileImage, String uri) {
@@ -19,6 +19,30 @@ public class SpotifyTrack implements Parcelable{
         this.albumName = albumName;
         this.profileImage = profileImage;
         this.uri = uri;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public String getArtistName() {
+        return artistName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public String getTrackName() {
+        return trackName;
+    }
+
+    public String getUri() {
+        return uri;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,6 +14,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.utils.Utility;
+import com.udacity.android.spotify.adapters.ArtistAdapter;
+import com.udacity.android.spotify.models.SpotifyArtist;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +77,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SpotifyArtist artist = artists.get(position);
-                ((OnItemSelected) getActivity()).onItemSelected(artist.id, artist.name);
+                ((OnItemSelected) getActivity()).onItemSelected(artist.getId(), artist.getName());
             }
         });
 

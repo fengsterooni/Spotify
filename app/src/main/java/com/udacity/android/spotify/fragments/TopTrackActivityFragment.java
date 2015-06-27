@@ -1,4 +1,4 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.utils.Utility;
+import com.udacity.android.spotify.activities.MainActivity;
+import com.udacity.android.spotify.activities.PlayerActivity;
+import com.udacity.android.spotify.activities.TopTrackActivity;
+import com.udacity.android.spotify.adapters.TrackAdapter;
+import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.util.ArrayList;
 import java.util.HashMap;

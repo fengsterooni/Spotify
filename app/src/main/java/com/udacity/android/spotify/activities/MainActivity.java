@@ -1,10 +1,14 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.fragments.SearchFragment;
+import com.udacity.android.spotify.fragments.TopTrackActivityFragment;
 
 public class MainActivity extends ActionBarActivity
         implements SearchFragment.OnItemSelected {

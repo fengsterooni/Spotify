@@ -1,4 +1,4 @@
-package com.udacity.android.spotify;
+package com.udacity.android.spotify.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
