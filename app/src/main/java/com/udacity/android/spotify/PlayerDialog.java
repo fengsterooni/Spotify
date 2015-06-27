@@ -85,23 +85,25 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             track = tracks.get(position);
         }
         setRetainInstance(true);
+
+        Intent bindIntent = new Intent(context, MusicPlayService.class);
+        context.startService(bindIntent);
+        context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(context)
+                .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_STATUS));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Set Dialog dimensions
-        // http://stackoverflow.com/questions/12478520/how-to-set-dialogfragments-width-and-height
-        int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
-        int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
         Dialog dialog = getDialog();
-        if (dialog != null)
+        if (dialog != null) {
+            // Set Dialog dimensions
+            // http://stackoverflow.com/questions/12478520/how-to-set-dialogfragments-width-and-height
+            int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
+            int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
             dialog.getWindow().setLayout(width, height);
-
-        Intent bindIntent = new Intent(context, MusicPlayService.class);
-        context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(context)
-                .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_STATUS));
+        }
     }
 
     @Override
