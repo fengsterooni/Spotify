@@ -5,13 +5,6 @@
     android:padding="@dimen/activity_horizontal_margin"
     tools:context="com.udacity.android.spotify.SearchFragment">
 
-    <ImageView
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:id="@+id/logo"
-        android:src="@mipmap/ic_launcher"
-        android:layout_gravity="center"/>
-
     <ListView
         android:id="@+id/listview_artists"
         android:layout_width="match_parent"

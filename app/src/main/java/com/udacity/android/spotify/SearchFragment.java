@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -38,8 +37,6 @@ public class SearchFragment extends Fragment {
     private ArrayList<SpotifyArtist> artists;
     static final String STRING_ARTISTS = "string_artists";
     private String mArtistsString;
-    @InjectView(R.id.logo)
-    ImageView mImageLogo;
     Context context;
 
     public SearchFragment() {
@@ -78,8 +75,6 @@ public class SearchFragment extends Fragment {
                 ((OnItemSelected) getActivity()).onItemSelected(artist.id, artist.name);
             }
         });
-        if (savedInstanceState != null)
-            mImageLogo.setVisibility(View.GONE);
 
         return rootView;
     }
@@ -147,8 +142,6 @@ public class SearchFragment extends Fragment {
     private void showArtists(List<Artist> items) {
         artistAdapter.clear();
         if (items.size() > 0) {
-            mImageLogo.setVisibility(View.GONE);
-
             String image = null;
             for (Artist artist : items) {
                 if (artist.images.size() > 0) {
@@ -158,8 +151,6 @@ public class SearchFragment extends Fragment {
             }
         } else {
             Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
-            if (mImageLogo.getVisibility() == View.GONE)
-                mImageLogo.setVisibility(View.VISIBLE);
         }
     }
 

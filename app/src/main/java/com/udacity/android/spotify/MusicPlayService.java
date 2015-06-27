@@ -76,6 +76,7 @@ public class MusicPlayService extends Service {
                 player.start();
                 mTrack = track;
                 handler.postDelayed(UpdateTrack, 100);
+                startForeground(NOTIFICATION_ID, buildNotification());
             }
         });
 
@@ -121,7 +122,6 @@ public class MusicPlayService extends Service {
                 loadAndPlay(track);
             }
         }
-        startForeground(NOTIFICATION_ID, buildNotification());
     }
 
     private Runnable UpdateTrack = new Runnable() {
@@ -140,10 +140,16 @@ public class MusicPlayService extends Service {
     };
 
     private Notification buildNotification() {
+        String title = "";
+        String text = "";
+        if (mTrack != null) {
+            title = mTrack.artistName;
+            text = mTrack.trackName;
+        }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Notification!")
-                .setContentText("Notification2222")
+                .setContentTitle(title)
+                .setContentText(text)
                 //.setContentIntent(pIntent)
                 ;
 
