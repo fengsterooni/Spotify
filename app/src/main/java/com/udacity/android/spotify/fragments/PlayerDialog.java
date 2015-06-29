@@ -42,6 +42,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     static int position;
     Context context;
     MusicPlayService musicPlayService;
+    LocalBroadcastManager localBroadcastManager;
 
     @InjectView(R.id.artist_name)
     TextView artistName;
@@ -92,13 +93,14 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         Intent bindIntent = new Intent(context, MusicPlayService.class);
         context.startService(bindIntent);
         context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(context)
-                .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_STATUS));
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         Dialog dialog = getDialog();
         if (dialog != null) {
             // Set Dialog dimensions
@@ -107,12 +109,20 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
             dialog.getWindow().setLayout(width, height);
         }
+
+        localBroadcastManager
+                .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_STATUS));
+    }
+
+    @Override
+    public void onPause() {
+        localBroadcastManager.unregisterReceiver(receiver);
+        super.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
         if (musicPlayService != null) {
             context.unbindService(this);
         }
