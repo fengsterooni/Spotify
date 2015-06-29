@@ -16,9 +16,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.udacity.android.spotify.R;
-import com.udacity.android.spotify.utils.Utility;
+import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.adapters.ArtistAdapter;
 import com.udacity.android.spotify.models.SpotifyArtist;
+import com.udacity.android.spotify.utils.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,6 +147,11 @@ public class SearchFragment extends Fragment {
 
     private void showArtists(List<Artist> items) {
         artistAdapter.clear();
+        android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.TOPTRACK_TAG);
+        if (fragment != null)
+            ft.remove(fragment).commit();
+
         if (items.size() > 0) {
             String image = null;
             for (Artist artist : items) {
