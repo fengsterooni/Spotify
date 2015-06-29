@@ -38,6 +38,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     ArrayList<SpotifyTrack> tracks;
     static SpotifyTrack track;
+    SpotifyTrack playing;
     static int position;
     Context context;
     MusicPlayService musicPlayService;
@@ -205,27 +206,30 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            double progress = intent.getDoubleExtra(MusicPlayService.TRACK_PROGRESS, 0.0);
-            double duration = intent.getDoubleExtra(MusicPlayService.TRACK_DURATION, 0.0);
-            elapse.setText(String.format("%02d:%02d",
-                            TimeUnit.MILLISECONDS.toMinutes((long) progress),
-                            TimeUnit.MILLISECONDS.toSeconds((long) progress) -
-                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                            toMinutes((long) progress)))
-            );
-            trackTime.setText(String.format("%02d:%02d",
-                            TimeUnit.MILLISECONDS.toMinutes((long) duration),
-                            TimeUnit.MILLISECONDS.toSeconds((long) duration) -
-                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                            toMinutes((long) duration)))
-            );
-            progressBar.setProgress((int) (progress * 100 / duration));
+            playing = intent.getParcelableExtra(MusicPlayService.TRACK_INFO);
+            if (playing.getId().equals(track.getId())) {
+                double progress = intent.getDoubleExtra(MusicPlayService.TRACK_PROGRESS, 0.0);
+                double duration = intent.getDoubleExtra(MusicPlayService.TRACK_DURATION, 0.0);
+                elapse.setText(String.format("%02d:%02d",
+                                TimeUnit.MILLISECONDS.toMinutes((long) progress),
+                                TimeUnit.MILLISECONDS.toSeconds((long) progress) -
+                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                                toMinutes((long) progress)))
+                );
+                trackTime.setText(String.format("%02d:%02d",
+                                TimeUnit.MILLISECONDS.toMinutes((long) duration),
+                                TimeUnit.MILLISECONDS.toSeconds((long) duration) -
+                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                                toMinutes((long) duration)))
+                );
+                progressBar.setProgress((int) (progress * 100 / duration));
 
-            boolean isPlaying = intent.getBooleanExtra(MusicPlayService.TRACK_STATUS, false);
-            if (isPlaying)
-                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
-            else
-                btnPlay.setImageResource(android.R.drawable.ic_media_play);
+                boolean isPlaying = intent.getBooleanExtra(MusicPlayService.TRACK_STATUS, false);
+                if (isPlaying)
+                    btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+                else
+                    btnPlay.setImageResource(android.R.drawable.ic_media_play);
+            }
         }
     };
 

@@ -26,6 +26,7 @@ public class MusicPlayService extends Service {
     public static final String TRACK_PROGRESS = "TRACK_PROGRESS";
     public static final String TRACK_DURATION = "TRACK_DURATION";
     public static final String TRACK_STATUS = "TRACK_STATUS";
+    public static final String TRACK_INFO = "TRACK_INFO";
     public static final int NOTIFICATION_ID = 101;
     boolean finished = false;
 
@@ -89,6 +90,7 @@ public class MusicPlayService extends Service {
                 handler.removeCallbacks(UpdateTrack);
                 double duration = mediaPlayer.getDuration();
                 Intent intent = new Intent(MEDIA_PLAYER_STATUS);
+                intent.putExtra(TRACK_INFO, mTrack);
                 intent.putExtra(TRACK_STATUS, mediaPlayer.isPlaying());
                 intent.putExtra(TRACK_PROGRESS, 0.0);
                 intent.putExtra(TRACK_DURATION, duration);
@@ -133,6 +135,7 @@ public class MusicPlayService extends Service {
                 double progress = mediaPlayer.getCurrentPosition();
                 double duration = mediaPlayer.getDuration();
                 Intent intent = new Intent(MEDIA_PLAYER_STATUS);
+                intent.putExtra(TRACK_INFO, mTrack);
                 intent.putExtra(TRACK_STATUS, mediaPlayer.isPlaying());
                 intent.putExtra(TRACK_PROGRESS, progress);
                 intent.putExtra(TRACK_DURATION, duration);
