@@ -159,6 +159,7 @@ public class SearchFragment extends Fragment {
                     image = artist.images.get(0).url;
                 }
                 artistAdapter.add(new SpotifyArtist(artist.id, artist.name, image));
+                image = null;
             }
         } else {
             Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
