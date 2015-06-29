@@ -13,12 +13,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.udacity.android.spotify.R;
-import com.udacity.android.spotify.utils.Utility;
 import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.activities.PlayerActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
 import com.udacity.android.spotify.models.SpotifyTrack;
+import com.udacity.android.spotify.utils.Utility;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,13 +63,15 @@ public class TopTrackActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = getActivity();
+
         tracks = new ArrayList<>();
         api = new SpotifyApi();
         spotify = api.getService();
+
         Bundle args = getArguments();
         if (args != null) {
             artist = args.getString(TopTrackActivity.ARTIST_ID);
-            context = getActivity();
 
             if (savedInstanceState == null || artist.equals(savedInstanceState.getString(STRING_ARTIST))) {
                 searchTopTracks();

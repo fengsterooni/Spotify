@@ -152,6 +152,7 @@ public class MusicPlayService extends Service {
             title = mTrack.getArtistName();
             text = mTrack.getTrackName();
         }
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
