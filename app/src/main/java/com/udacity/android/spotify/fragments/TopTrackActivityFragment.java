@@ -139,6 +139,7 @@ public class TopTrackActivityFragment extends Fragment {
                                             track.name, track.album.name, image, track.preview_url);
 
                                     trackAdapter.add(newTrack);
+                                    image = null;
                                 }
                             } else {
                                 Toast.makeText(context, "No tracks found. Please check other artist.", Toast.LENGTH_SHORT).show();
