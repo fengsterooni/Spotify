@@ -21,9 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.udacity.android.spotify.services.MusicPlayService;
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.models.SpotifyTrack;
+import com.udacity.android.spotify.services.MusicPlayService;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +39,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     ArrayList<SpotifyTrack> tracks;
     static SpotifyTrack track;
     static int position;
-    static int playing;
     Context context;
     MusicPlayService musicPlayService;
 
@@ -157,19 +156,16 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             trackName.setText(" " + track.getTrackName());
             Picasso.with(getActivity()).load(track.getProfileImage()).into(image);
 
-            if (position != playing) {
-                btnPlay.setImageResource(android.R.drawable.ic_media_play);
-                elapse.setText(String.format("%02d:%02d", 0, 0));
-                trackTime.setText(String.format("%02d:%02d", 0, 0));
-                progressBar.setProgress(0);
-            }
+            btnPlay.setImageResource(android.R.drawable.ic_media_play);
+            elapse.setText(String.format("%02d:%02d", 0, 0));
+            trackTime.setText(String.format("%02d:%02d", 0, 0));
+            progressBar.setProgress(0);
         }
     }
 
     public void playTrack() {
         if (musicPlayService != null) {
             musicPlayService.playTrack(track);
-            playing = position;
         }
     }
 
@@ -177,12 +173,14 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         position = (position > 0) ? position - 1 : tracks.size() - 1;
         track = tracks.get(position);
         updateTrack();
+        playTrack();
     }
 
     public void selectNext() {
         position = (position < tracks.size() - 1) ? position + 1 : 0;
         track = tracks.get(position);
         updateTrack();
+        playTrack();
     }
 
     // http://stackoverflow.com/questions/12433397/android-dialogfragment-disappears-after-orientation-change
@@ -207,29 +205,27 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (playing == position) {
-                double progress = intent.getDoubleExtra(MusicPlayService.TRACK_PROGRESS, 0.0);
-                double duration = intent.getDoubleExtra(MusicPlayService.TRACK_DURATION, 0.0);
-                elapse.setText(String.format("%02d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes((long) progress),
-                                TimeUnit.MILLISECONDS.toSeconds((long) progress) -
-                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                                toMinutes((long) progress)))
-                );
-                trackTime.setText(String.format("%02d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes((long) duration),
-                                TimeUnit.MILLISECONDS.toSeconds((long) duration) -
-                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                                toMinutes((long) duration)))
-                );
-                progressBar.setProgress((int) (progress * 100 / duration));
+            double progress = intent.getDoubleExtra(MusicPlayService.TRACK_PROGRESS, 0.0);
+            double duration = intent.getDoubleExtra(MusicPlayService.TRACK_DURATION, 0.0);
+            elapse.setText(String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes((long) progress),
+                            TimeUnit.MILLISECONDS.toSeconds((long) progress) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                            toMinutes((long) progress)))
+            );
+            trackTime.setText(String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes((long) duration),
+                            TimeUnit.MILLISECONDS.toSeconds((long) duration) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                            toMinutes((long) duration)))
+            );
+            progressBar.setProgress((int) (progress * 100 / duration));
 
-                boolean isPlaying = intent.getBooleanExtra(MusicPlayService.TRACK_STATUS, false);
-                if (isPlaying)
-                    btnPlay.setImageResource(android.R.drawable.ic_media_pause);
-                else
-                    btnPlay.setImageResource(android.R.drawable.ic_media_play);
-            }
+            boolean isPlaying = intent.getBooleanExtra(MusicPlayService.TRACK_STATUS, false);
+            if (isPlaying)
+                btnPlay.setImageResource(android.R.drawable.ic_media_pause);
+            else
+                btnPlay.setImageResource(android.R.drawable.ic_media_play);
         }
     };
 

@@ -90,7 +90,7 @@ public class MusicPlayService extends Service {
                 double duration = mediaPlayer.getDuration();
                 Intent intent = new Intent(MEDIA_PLAYER_STATUS);
                 intent.putExtra(TRACK_STATUS, mediaPlayer.isPlaying());
-                intent.putExtra(TRACK_PROGRESS, duration);
+                intent.putExtra(TRACK_PROGRESS, 0.0);
                 intent.putExtra(TRACK_DURATION, duration);
                 broadcastManager.sendBroadcast(intent);
                 finished = true;
