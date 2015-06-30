@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.fragments.TopTrackActivityFragment;
@@ -52,14 +53,22 @@ public class TopTrackActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
             super.onBackPressed();
             return true;
         }
+
+        if (id == R.id.action_playing) {
+            Toast.makeText(this, "Toasted HAHAHA", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 

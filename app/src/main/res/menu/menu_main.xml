@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
+    <item
+        android:id="@+id/action_playing"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_action_playing"
+        android:title="@string/action_playing"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_settings"

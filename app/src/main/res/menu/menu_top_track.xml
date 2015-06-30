@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.udacity.android.spotify.activities.TopTrackActivity">
     <item
+        android:id="@+id/action_playing"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_action_playing"
+        android:title="@string/action_playing"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
