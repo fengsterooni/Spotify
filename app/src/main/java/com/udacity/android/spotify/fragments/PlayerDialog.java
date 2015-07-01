@@ -86,7 +86,8 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         if (args != null) {
             tracks = args.getParcelableArrayList(TOP_TRACKS);
             position = args.getInt(TRACK_POSITION);
-            track = tracks.get(position);
+            if (tracks != null)
+                track = tracks.get(position);
         }
         setRetainInstance(true);
 
@@ -99,8 +100,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     @Override
     public void onResume() {
-        super.onResume();
-
         Dialog dialog = getDialog();
         if (dialog != null) {
             // Set Dialog dimensions
@@ -108,10 +107,13 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
             int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
             dialog.getWindow().setLayout(width, height);
+            dialog.show();
         }
 
         localBroadcastManager
                 .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_STATUS));
+
+        super.onResume();
     }
 
     @Override
@@ -177,6 +179,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     public void playTrack() {
         if (musicPlayService != null) {
             musicPlayService.setTracks(tracks);
+            // musicPlayService.setPosition(position);
             playTrack(position);
         }
     }
@@ -188,17 +191,27 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     }
 
     public void selectPrev() {
+        /*
         position = (position > 0) ? position - 1 : tracks.size() - 1;
         track = tracks.get(position);
         updateTrack();
         playTrack(position);
+        */
+        if (musicPlayService != null)
+            musicPlayService.playPrev();
+        updateCurrentPlaying();
     }
 
     public void selectNext() {
+        /*
         position = (position < tracks.size() - 1) ? position + 1 : 0;
         track = tracks.get(position);
         updateTrack();
         playTrack(position);
+        */
+        if (musicPlayService != null)
+            musicPlayService.playNext();
+        updateCurrentPlaying();
     }
 
     // http://stackoverflow.com/questions/12433397/android-dialogfragment-disappears-after-orientation-change
@@ -256,5 +269,12 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
+    }
+
+    public void updateCurrentPlaying() {
+        if (musicPlayService != null) {
+            playing = musicPlayService.getmTrack();
+            updateTrack();
+        }
     }
 }

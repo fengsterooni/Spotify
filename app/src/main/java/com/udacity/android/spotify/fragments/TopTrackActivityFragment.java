@@ -75,7 +75,7 @@ public class TopTrackActivityFragment extends Fragment {
         if (args != null) {
             artist = args.getString(TopTrackActivity.ARTIST_ID);
 
-            if (savedInstanceState == null || artist.equals(savedInstanceState.getString(STRING_ARTIST))) {
+            if (savedInstanceState == null) {
                 searchTopTracks();
             } else {
                 tracks.clear();

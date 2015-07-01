@@ -11,8 +11,11 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.activities.PlayerActivity;
+import com.udacity.android.spotify.fragments.PlayerDialog;
 import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.io.IOException;
@@ -31,6 +34,8 @@ public class MusicPlayService extends Service {
     public static final String TRACK_DURATION = "TRACK_DURATION";
     public static final String TRACK_STATUS = "TRACK_STATUS";
     public static final String TRACK_INFO = "TRACK_INFO";
+
+    public static final String TRACK_POSITION = "TRACK_POSITION";
 
     public static String PREV_ACTION = "com.udacity.android.spotify.action.prev";
     public static String PLAY_ACTION = "com.udacity.android.spotify.action.play";
@@ -77,10 +82,34 @@ public class MusicPlayService extends Service {
         mTracks = tracks;
     }
 
+    // public void setPosition(int position) {
+    //    mPosition = position;
+    // }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        playTrack(mTrack);
-        return START_STICKY;
+        if (intent != null) {
+            String action = intent.getAction();
+            if (action != null && action.equals(PLAY_ACTION)) {
+                int num = intent.getIntExtra(TRACK_POSITION, 0);
+                Log.i("INFO", "GOT POSITION: " + num);
+                playTrack(num);
+            }
+
+            if (action != null && action.equals(PREV_ACTION)) {
+                mPosition = intent.getIntExtra(TRACK_POSITION, 0);
+                Log.i("INFO", "GOT POSITION: " + mPosition);
+                playTrack(mPosition);
+            }
+
+            if (action != null && action.equals(NEXT_ACTION)) {
+                mPosition = intent.getIntExtra(TRACK_POSITION, 0);
+                Log.i("INFO", "GOT POSITION: " + mPosition);
+                playTrack(mPosition);
+            }
+        }
+
+        return super.onStartCommand(intent, flags, startId);
     }
 
     public void loadAndPlay(final SpotifyTrack track) {
@@ -172,6 +201,16 @@ public class MusicPlayService extends Service {
         }
     };
 
+    public int selectPrev() {
+        int position = mPosition;
+        return (position > 0) ? position - 1 : mTracks.size() - 1;
+    }
+
+    public int selectNext() {
+        int position = mPosition;
+        return (position < mTracks.size() - 1) ? position + 1 : 0;
+    }
+
     private Notification buildNotification() {
         String title = "";
         String text = "";
@@ -180,19 +219,72 @@ public class MusicPlayService extends Service {
             text = mTrack.getTrackName();
         }
 
+        Intent notificationIntent = new Intent(this, PlayerActivity.class);
+        notificationIntent.putExtra(PlayerDialog.TOP_TRACKS, mTrack);
+        notificationIntent.putExtra(PlayerDialog.TRACK_POSITION, mPosition);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+
         Intent playIntent = new Intent(this, MusicPlayService.class);
+        playIntent.putExtra(TRACK_POSITION, mPosition);
         playIntent.setAction(PLAY_ACTION);
         PendingIntent pplayIntent = PendingIntent.getService(this, 0,
-                playIntent, 0);
+                playIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Intent prevIntent = new Intent(this, MusicPlayService.class);
+        prevIntent.putExtra(TRACK_POSITION, selectPrev());
+        prevIntent.setAction(PREV_ACTION);
+        PendingIntent prevplayIntent = PendingIntent.getService(this, 0,
+                prevIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        Intent nextIntent = new Intent(this, MusicPlayService.class);
+        nextIntent.putExtra(TRACK_POSITION, selectNext());
+        nextIntent.setAction(NEXT_ACTION);
+        PendingIntent nextplayIntent = PendingIntent.getService(this, 0,
+                nextIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setContentIntent(pplayIntent);
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .addAction(android.R.drawable.ic_media_previous,
+                        "Previous", prevplayIntent)
+                .addAction(android.R.drawable.ic_media_play, "Play",
+                        pplayIntent)
+                .addAction(android.R.drawable.ic_media_next, "Next",
+                        nextplayIntent);
 
         builder.setAutoCancel(true);
 
         return builder.build();
+    }
+
+    public static SpotifyTrack getmTrack() {
+        return mTrack;
+    }
+
+    public static ArrayList<SpotifyTrack> getmTracks() {
+
+        return mTracks;
+    }
+
+    public static int getmPosition() {
+        return mPosition;
+    }
+
+    public void playNext() {
+        mPosition = (mPosition < mTracks.size() - 1) ? mPosition + 1 : 0;
+        play();
+    }
+
+    public void playPrev() {
+        mPosition = (mPosition > 0) ? mPosition - 1 : mTracks.size() - 1;
+        play();
+    }
+
+    public void play() {
+        playTrack(mPosition);
     }
 }
