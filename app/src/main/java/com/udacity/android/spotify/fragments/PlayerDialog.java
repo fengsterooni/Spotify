@@ -176,7 +176,14 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     public void playTrack() {
         if (musicPlayService != null) {
-            musicPlayService.playTrack(track);
+            musicPlayService.setTracks(tracks);
+            playTrack(position);
+        }
+    }
+
+    public void playTrack(int position) {
+        if (musicPlayService != null) {
+            musicPlayService.playTrack(position);
         }
     }
 
@@ -184,14 +191,14 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         position = (position > 0) ? position - 1 : tracks.size() - 1;
         track = tracks.get(position);
         updateTrack();
-        playTrack();
+        playTrack(position);
     }
 
     public void selectNext() {
         position = (position < tracks.size() - 1) ? position + 1 : 0;
         track = tracks.get(position);
         updateTrack();
-        playTrack();
+        playTrack(position);
     }
 
     // http://stackoverflow.com/questions/12433397/android-dialogfragment-disappears-after-orientation-change

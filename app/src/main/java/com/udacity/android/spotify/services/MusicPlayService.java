@@ -1,6 +1,7 @@
 package com.udacity.android.spotify.services;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -15,18 +16,26 @@ import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MusicPlayService extends Service {
     static MediaPlayer mediaPlayer;
     static SpotifyTrack mTrack;
+    static ArrayList<SpotifyTrack> mTracks;
+    static int mPosition;
     private static Handler handler = new Handler();
     private final IBinder mBinder = new LocalBinder();
-    LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+    LocalBroadcastManager broadcastManager;
     public static final String MEDIA_PLAYER_STATUS = "MEDIA_PLAYER_STATUS";
     public static final String TRACK_PROGRESS = "TRACK_PROGRESS";
     public static final String TRACK_DURATION = "TRACK_DURATION";
     public static final String TRACK_STATUS = "TRACK_STATUS";
     public static final String TRACK_INFO = "TRACK_INFO";
+
+    public static String PREV_ACTION = "com.udacity.android.spotify.action.prev";
+    public static String PLAY_ACTION = "com.udacity.android.spotify.action.play";
+    public static String NEXT_ACTION = "com.udacity.android.spotify.action.next";
+
     public static final int NOTIFICATION_ID = 101;
     boolean finished = false;
 
@@ -39,6 +48,7 @@ public class MusicPlayService extends Service {
         super.onCreate();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        broadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
@@ -61,6 +71,16 @@ public class MusicPlayService extends Service {
         public MusicPlayService getService() {
             return MusicPlayService.this;
         }
+    }
+
+    public void setTracks(ArrayList<SpotifyTrack> tracks) {
+        mTracks = tracks;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        playTrack(mTrack);
+        return START_STICKY;
     }
 
     public void loadAndPlay(final SpotifyTrack track) {
@@ -129,6 +149,13 @@ public class MusicPlayService extends Service {
         }
     }
 
+    public void playTrack(int position) {
+        if (mTracks != null) {
+            mPosition = position;
+            playTrack(mTracks.get(position));
+        }
+    }
+
     private Runnable UpdateTrack = new Runnable() {
         public void run() {
             if (mediaPlayer != null) {
@@ -153,12 +180,16 @@ public class MusicPlayService extends Service {
             text = mTrack.getTrackName();
         }
 
+        Intent playIntent = new Intent(this, MusicPlayService.class);
+        playIntent.setAction(PLAY_ACTION);
+        PendingIntent pplayIntent = PendingIntent.getService(this, 0,
+                playIntent, 0);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(text)
-                //.setContentIntent(pIntent)
-                ;
+                .setContentIntent(pplayIntent);
 
         builder.setAutoCancel(true);
 
