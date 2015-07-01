@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
+    ListPreference listPreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,15 +30,15 @@ public class SettingsActivity extends PreferenceActivity
         // Add 'general' preferences, defined in the XML file
         addPreferencesFromResource(R.xml.pref_general);
 
+        listPreference = (ListPreference) findPreference(getString(R.string.pref_list_country_code_key));
 
-        final ListPreference listPreference = (ListPreference) findPreference("country");
-
+        // http://stackoverflow.com/questions/6474707/how-to-fill-listpreference-dynamically-when-onpreferenceclick-is-triggered
         // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
         setListPreferenceData(listPreference);
 
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
-        bindPreferenceSummaryToValue(findPreference("country"));
+        bindPreferenceSummaryToValue(listPreference);
     }
 
     protected static void setListPreferenceData(ListPreference lp) {

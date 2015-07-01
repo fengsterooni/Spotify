@@ -2,7 +2,9 @@ package com.udacity.android.spotify.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
@@ -120,8 +122,11 @@ public class TopTrackActivityFragment extends Fragment {
         if (!Utility.isNetworkAvailable(context)) {
             Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
         } else {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String code = pref.getString("country", Locale.getDefault().getCountry());
+            // Log.i("INFO", "GOT THE CODE HERE: " + code);
             final Map<String, Object> options = new HashMap<>();
-            options.put(spotify.COUNTRY, Locale.getDefault().getCountry());
+            options.put(spotify.COUNTRY, code);
             spotify.getArtistTopTrack(artist, options, new Callback<Tracks>() {
                 @Override
                 public void success(final Tracks tracks, Response response) {
@@ -149,8 +154,14 @@ public class TopTrackActivityFragment extends Fragment {
                 }
 
                 @Override
-                public void failure(RetrofitError error) {
-                    Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                public void failure(final RetrofitError error) {
+                    // Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context, error.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             });
         }

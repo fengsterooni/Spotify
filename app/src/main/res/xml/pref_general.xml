@@ -4,8 +4,8 @@
     android:layout_height="match_parent">
 
     <ListPreference
-        android:title="Country Code"
-        android:key="country" />
+        android:title="@string/pref_list_country_code_title"
+        android:key="@string/pref_list_country_code_key" />
 
     <CheckBoxPreference
         android:title="@string/pref_enable_notifications_label"
