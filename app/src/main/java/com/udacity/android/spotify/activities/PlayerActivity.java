@@ -26,10 +26,14 @@ public class PlayerActivity extends ActionBarActivity {
 
             if (savedInstanceState == null) {
                 dialog = PlayerDialog.newInstance(tracks, position);
-                if (dialog != null)
-                    getSupportFragmentManager().beginTransaction()
-                            .add(android.R.id.content, dialog)
-                            .commit();
+                if (dialog != null) {
+                    if (MainActivity.ismTwoPane()) {
+                        dialog.show(getSupportFragmentManager(), "Player");
+                    } else
+                        getSupportFragmentManager().beginTransaction()
+                                .add(android.R.id.content, dialog)
+                                .commit();
+                }
             }
         }
     }

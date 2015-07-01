@@ -14,8 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.udacity.android.spotify.R;
-import com.udacity.android.spotify.activities.PlayerActivity;
-import com.udacity.android.spotify.fragments.PlayerDialog;
+import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.io.IOException;
@@ -219,9 +218,9 @@ public class MusicPlayService extends Service {
             text = mTrack.getTrackName();
         }
 
-        Intent notificationIntent = new Intent(this, PlayerActivity.class);
-        notificationIntent.putExtra(PlayerDialog.TOP_TRACKS, mTrack);
-        notificationIntent.putExtra(PlayerDialog.TRACK_POSITION, mPosition);
+        Intent notificationIntent = new Intent(this, TopTrackActivity.class);
+        // notificationIntent.putExtra(PlayerDialog.TOP_TRACKS, mTracks);
+        // notificationIntent.putExtra(PlayerDialog.TRACK_POSITION, mPosition);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
 
@@ -247,16 +246,15 @@ public class MusicPlayService extends Service {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setContentIntent(pendingIntent)
+                //.setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .addAction(android.R.drawable.ic_media_previous,
                         "Previous", prevplayIntent)
                 .addAction(android.R.drawable.ic_media_play, "Play",
                         pplayIntent)
                 .addAction(android.R.drawable.ic_media_next, "Next",
-                        nextplayIntent);
-
-        builder.setAutoCancel(true);
+                        nextplayIntent)
+                .setAutoCancel(true);
 
         return builder.build();
     }

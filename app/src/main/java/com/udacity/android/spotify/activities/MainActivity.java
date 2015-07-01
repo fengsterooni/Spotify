@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.fragments.SearchFragment;
@@ -48,7 +47,9 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         if (id == R.id.action_playing) {
-            Toast.makeText(this, "Toasted", Toast.LENGTH_SHORT).show();
+            TopTrackActivityFragment fragment = (TopTrackActivityFragment) getSupportFragmentManager().findFragmentByTag(TOPTRACK_TAG);
+            if (fragment != null)
+                fragment.popupPlayer();
             return true;
         }
 

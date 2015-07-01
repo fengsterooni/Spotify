@@ -1,7 +1,6 @@
 package com.udacity.android.spotify.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.activities.MainActivity;
-import com.udacity.android.spotify.activities.PlayerActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
 import com.udacity.android.spotify.models.SpotifyTrack;
@@ -44,6 +42,7 @@ public class TopTrackActivityFragment extends Fragment {
     ListView mListView;
     private TrackAdapter trackAdapter;
     private ArrayList<SpotifyTrack> tracks;
+    private int mPosition;
     static final String STRING_TRACKS = "STRING_TRACKS";
     static final String STRING_ARTIST = "STRING_ARTIST";
     String artist;
@@ -94,21 +93,32 @@ public class TopTrackActivityFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, position);
-
-                if (MainActivity.ismTwoPane())
-                    playerDialog.show(fm, "Player");
-                else {
-                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
-                    intent.putExtra(PlayerDialog.TOP_TRACKS, tracks);
-                    intent.putExtra(PlayerDialog.TRACK_POSITION, position);
-                    startActivity(intent);
-                }
+                mPosition = position;
+                popupPlayer();
             }
         });
 
         return view;
+    }
+
+    public void popupPlayer() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, mPosition);
+
+        if (MainActivity.ismTwoPane())
+            playerDialog.show(fm, "Player");
+        else {
+                    /*
+                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
+                    intent.putExtra(PlayerDialog.TOP_TRACKS, tracks);
+                    intent.putExtra(PlayerDialog.TRACK_POSITION, position);
+                    startActivity(intent);
+                    */
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.fragment_toptrack, playerDialog, "player")
+                    .commit();
+        }
     }
 
     @Override

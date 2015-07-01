@@ -37,9 +37,9 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     public final static String TRACK_POSITION = "TRACK_POSITION";
 
     ArrayList<SpotifyTrack> tracks;
-    static SpotifyTrack track;
-    SpotifyTrack playing;
-    static int position;
+    SpotifyTrack track;
+    static SpotifyTrack playing;
+    int position;
     Context context;
     MusicPlayService musicPlayService;
     LocalBroadcastManager localBroadcastManager;
