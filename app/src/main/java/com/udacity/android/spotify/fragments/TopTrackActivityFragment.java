@@ -108,12 +108,6 @@ public class TopTrackActivityFragment extends Fragment {
         if (MainActivity.ismTwoPane())
             playerDialog.show(fm, "Player");
         else {
-                    /*
-                    Intent intent = new Intent(getActivity(), PlayerActivity.class);
-                    intent.putExtra(PlayerDialog.TOP_TRACKS, tracks);
-                    intent.putExtra(PlayerDialog.TRACK_POSITION, position);
-                    startActivity(intent);
-                    */
             getActivity().getSupportFragmentManager().beginTransaction()
                     .addToBackStack(null)
                     .replace(R.id.fragment_toptrack, playerDialog, "player")
@@ -133,8 +127,7 @@ public class TopTrackActivityFragment extends Fragment {
             Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
         } else {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String code = pref.getString("country", Locale.getDefault().getCountry());
-            // Log.i("INFO", "GOT THE CODE HERE: " + code);
+            String code = pref.getString(getString(R.string.pref_list_country_code_key), Locale.getDefault().getCountry());
             final Map<String, Object> options = new HashMap<>();
             options.put(spotify.COUNTRY, code);
             spotify.getArtistTopTrack(artist, options, new Callback<Tracks>() {

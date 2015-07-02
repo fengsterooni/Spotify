@@ -61,7 +61,7 @@ public class TopTrackActivity extends ActionBarActivity {
         }
 
         if (id == R.id.action_playing) {
-            fragment.popupPlayer();
+            // fragment.popupPlayer();
             return true;
         }
 

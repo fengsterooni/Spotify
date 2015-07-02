@@ -16,11 +16,18 @@
     <string name="pref_list_country_code_key" translatable="false">country</string>
     <string name="pref_list_country_code_title">Country Code</string>
 
-    <!-- Strings related to Notification Enabled preference -->
-    <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
-    <string name="pref_enable_notifications_label">Lock Screen Notifications</string>
-    <string name="pref_enable_notifications_true">Enabled</string>
-    <string name="pref_enable_notifications_false">Not Enabled</string>
-    <string name="pref_enable_notifications_default" translatable="false">true</string>
+    <!-- Strings related to Notification Visibility preference -->
+    <string name="pref_notifications_visibilty_key" translatable="false">visibility</string>
+    <string name="pref_notifications_visibilty_label">Notifications Visibility</string>
+    <string name="pref_notifications_visibilty_default">0</string>
 
+    <string name="pref_notifications_public">Show all notification content</string>
+    <string name="pref_notifications_private">Hide sensitive notification content</string>
+    <string name="pref_notifications_secret">Don\'t show notification at all</string>
+
+    <!-- Strings related to Notification Media Control -->
+    <string name="notification_play">Play</string>
+    <string name="notification_pause">Pause</string>
+    <string name="notification_previous">Prev</string>
+    <string name="notification_next">Next</string>
 </resources>

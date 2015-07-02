@@ -39,6 +39,7 @@ public class SettingsActivity extends PreferenceActivity
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
         bindPreferenceSummaryToValue(listPreference);
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_notifications_visibilty_key)));
     }
 
     protected static void setListPreferenceData(ListPreference lp) {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pref_notification_visibility">
+        <item>@string/pref_notifications_private</item>
+        <item>@string/pref_notifications_public</item>
+        <item>@string/pref_notifications_secret</item>
+    </string-array>
+
+    <string-array name="pref_notification_visibility_values">
+        <item>Notification.VISIBILITY_PRIVATE</item>
+        <item>Notification.VISIBILITY_PUBLIC</item>
+        <item>Notification.VISIBILITY_SECRET</item>
+    </string-array>
+</resources>
