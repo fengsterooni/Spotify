@@ -40,6 +40,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     SpotifyTrack track;
     static SpotifyTrack playing;
     static int position;
+    static ArrayList<SpotifyTrack> playingTracks;
     Context context;
     MusicPlayService musicPlayService;
     LocalBroadcastManager localBroadcastManager;
@@ -95,7 +96,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         context.startService(bindIntent);
         context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
 
-        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
+        localBroadcastManager = LocalBroadcastManager.getInstance(context);
     }
 
     @Override
@@ -188,6 +189,8 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     public void playTrack(int position) {
         if (musicPlayService != null) {
+            musicPlayService.setTracks(tracks);
+            musicPlayService.setPosition(position);
             musicPlayService.playTrack(position);
         }
     }
@@ -214,8 +217,6 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         musicPlayService = ((MusicPlayService.LocalBinder) service).getService();
-        musicPlayService.setTracks(tracks);
-        musicPlayService.setPosition(position);
     }
 
     @Override
@@ -253,6 +254,8 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
                 }
             } else if (intent.getAction().equals(MusicPlayService.MEDIA_PLAYER_NEW_TRACK)) {
                 track = playing = intent.getParcelableExtra(MusicPlayService.TRACK_INFO);
+                playingTracks = intent.getParcelableArrayListExtra(MusicPlayService.TOP_TRACK_LIST);
+                position = intent.getIntExtra(MusicPlayService.TRACK_POSITION, 0);
                 updateTrack();
             }
         }

@@ -13,7 +13,7 @@ import com.udacity.android.spotify.fragments.TopTrackActivityFragment;
 public class MainActivity extends ActionBarActivity
         implements SearchFragment.OnItemSelected {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
-    public static final String TOPTRACK_TAG = "TOPTRACK";
+    public static final String TOPTRACK_TAG = "TOP_TRACK";
     private static boolean mTwoPane;
 
     public static boolean ismTwoPane() {

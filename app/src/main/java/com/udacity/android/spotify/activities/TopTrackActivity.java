@@ -12,7 +12,7 @@ import com.udacity.android.spotify.fragments.TopTrackActivityFragment;
 
 
 public class TopTrackActivity extends ActionBarActivity {
-    TopTrackActivityFragment fragment;
+    static TopTrackActivityFragment fragment;
     public final static String ARTIST_ID = "ARTIST_ID";
     public final static String ARTIST_NAME = "ARTIST_NAME";
 
@@ -61,7 +61,7 @@ public class TopTrackActivity extends ActionBarActivity {
         }
 
         if (id == R.id.action_playing) {
-            // fragment.popupPlayer();
+            fragment.popupCurrent();
             return true;
         }
 

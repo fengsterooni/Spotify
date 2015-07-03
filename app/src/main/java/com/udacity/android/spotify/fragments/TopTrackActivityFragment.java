@@ -1,11 +1,16 @@
 package com.udacity.android.spotify.fragments;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +23,7 @@ import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
 import com.udacity.android.spotify.models.SpotifyTrack;
+import com.udacity.android.spotify.services.MusicPlayService;
 import com.udacity.android.spotify.utils.Utility;
 
 import java.util.ArrayList;
@@ -43,10 +49,18 @@ public class TopTrackActivityFragment extends Fragment {
     private TrackAdapter trackAdapter;
     private ArrayList<SpotifyTrack> tracks;
     private int mPosition;
+
+    static ArrayList<SpotifyTrack> cTracks;
+    static int cPosition;
+
     static final String STRING_TRACKS = "STRING_TRACKS";
     static final String STRING_ARTIST = "STRING_ARTIST";
+    public static final String PLAYER_TAG = "PLAYER";
+
     String artist;
     Context context;
+
+    LocalBroadcastManager localBroadcastManager;
 
     public TopTrackActivityFragment() {
     }
@@ -64,7 +78,7 @@ public class TopTrackActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getActivity();
+        context = getActivity().getApplicationContext();
 
         tracks = new ArrayList<>();
         api = new SpotifyApi();
@@ -81,6 +95,22 @@ public class TopTrackActivityFragment extends Fragment {
                 tracks = savedInstanceState.getParcelableArrayList(STRING_TRACKS);
             }
         }
+
+        localBroadcastManager = LocalBroadcastManager.getInstance(context);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        localBroadcastManager
+                .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_NEW_TRACK));
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        localBroadcastManager.unregisterReceiver(receiver);
+        super.onPause();
     }
 
     @Override
@@ -102,17 +132,26 @@ public class TopTrackActivityFragment extends Fragment {
     }
 
     public void popupPlayer() {
+        popupPlayer(tracks, mPosition);
+    }
+
+    public void popupPlayer(ArrayList<SpotifyTrack> tracks, int position) {
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, mPosition);
+        PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, position);
 
         if (MainActivity.ismTwoPane())
-            playerDialog.show(fm, "Player");
+            playerDialog.show(fm, PLAYER_TAG);
         else {
             getActivity().getSupportFragmentManager().beginTransaction()
                     .addToBackStack(null)
-                    .replace(R.id.fragment_toptrack, playerDialog, "player")
+                    .replace(R.id.fragment_toptrack, playerDialog, PLAYER_TAG)
                     .commit();
         }
+    }
+
+    public void popupCurrent() {
+        if (cTracks != null && cTracks.size() > 0)
+            popupPlayer(cTracks, cPosition);
     }
 
     @Override
@@ -169,4 +208,15 @@ public class TopTrackActivityFragment extends Fragment {
             });
         }
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(MusicPlayService.MEDIA_PLAYER_NEW_TRACK)) {
+                cTracks = intent.getParcelableArrayListExtra(MusicPlayService.TOP_TRACK_LIST);
+                cPosition = intent.getIntExtra(MusicPlayService.TRACK_POSITION, 0);
+                Log.i("INFO", "NEW TRACK recorded");
+            }
+        }
+    };
 }

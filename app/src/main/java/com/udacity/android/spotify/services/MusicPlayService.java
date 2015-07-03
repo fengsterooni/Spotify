@@ -31,14 +31,20 @@ public class MusicPlayService extends Service {
     private static Handler handler = new Handler();
     private final IBinder mBinder = new LocalBinder();
     LocalBroadcastManager broadcastManager;
+
+    // Track play status for each current playing track
+    // Intent filter
     public static final String MEDIA_PLAYER_STATUS = "MEDIA_PLAYER_STATUS";
-    public static final String MEDIA_PLAYER_NEW_TRACK = "MEDIA_PLAYER_NEW_TRACK";
     public static final String TRACK_PROGRESS = "TRACK_PROGRESS";
     public static final String TRACK_DURATION = "TRACK_DURATION";
     public static final String TRACK_STATUS = "TRACK_STATUS";
     public static final String TRACK_INFO = "TRACK_INFO";
 
+    // Track info <list of top tracks and position of current playing track>
+    // Intent filter
+    public static final String MEDIA_PLAYER_NEW_TRACK = "MEDIA_PLAYER_NEW_TRACK";
     public static final String TRACK_POSITION = "TRACK_POSITION";
+    public static final String TOP_TRACK_LIST = "TOP_TRACK_LIST";
 
     public static String PREV_ACTION = "com.udacity.android.spotify.action.prev";
     public static String PLAY_ACTION = "com.udacity.android.spotify.action.play";
@@ -132,9 +138,15 @@ public class MusicPlayService extends Service {
                 player.start();
                 mTrack = track;
                 handler.postDelayed(UpdateTrack, 100);
+
+                // Put service at Foreground and send out notification
                 startForeground(NOTIFICATION_ID, buildNotification());
+
+                // Broadcast current playing list and current track position
+                // This will let other activity/fragment to popup current playing track control
                 Intent intent = new Intent(MEDIA_PLAYER_NEW_TRACK);
                 intent.putExtra(TRACK_INFO, mTrack);
+                intent.putExtra(TOP_TRACK_LIST, mTracks);
                 intent.putExtra(TRACK_POSITION, mPosition);
                 broadcastManager.sendBroadcast(intent);
             }
@@ -145,6 +157,8 @@ public class MusicPlayService extends Service {
             public void onCompletion(MediaPlayer mp) {
                 handler.removeCallbacks(UpdateTrack);
                 double duration = mediaPlayer.getDuration();
+
+                // Broadcast current playing status (COMPLETED)
                 Intent intent = new Intent(MEDIA_PLAYER_STATUS);
                 intent.putExtra(TRACK_INFO, mTrack);
                 intent.putExtra(TRACK_STATUS, mediaPlayer.isPlaying());
@@ -197,6 +211,9 @@ public class MusicPlayService extends Service {
             if (mediaPlayer != null) {
                 double progress = mediaPlayer.getCurrentPosition();
                 double duration = mediaPlayer.getDuration();
+
+                // Broadcast current playing status (STARTED)
+                // Will let control UI to update progress and time
                 Intent intent = new Intent(MEDIA_PLAYER_STATUS);
                 intent.putExtra(TRACK_INFO, mTrack);
                 intent.putExtra(TRACK_STATUS, mediaPlayer.isPlaying());
@@ -238,19 +255,19 @@ public class MusicPlayService extends Service {
         playIntent.putExtra(TRACK_POSITION, mPosition);
         playIntent.setAction(PLAY_ACTION);
         PendingIntent pausePendingIntent = PendingIntent.getService(this, 0,
-                playIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent prevIntent = new Intent(this, MusicPlayService.class);
         prevIntent.putExtra(TRACK_POSITION, selectPrev());
         prevIntent.setAction(PREV_ACTION);
         PendingIntent prevPendingIntent = PendingIntent.getService(this, 0,
-                prevIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent nextIntent = new Intent(this, MusicPlayService.class);
         nextIntent.putExtra(TRACK_POSITION, selectNext());
         nextIntent.setAction(NEXT_ACTION);
         PendingIntent nextPendingIntent = PendingIntent.getService(this, 0,
-                nextIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         /*
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
