@@ -1,24 +1,23 @@
 package com.udacity.android.spotify.services;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.udacity.android.spotify.R;
-import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.io.IOException;
@@ -72,13 +71,13 @@ public class MusicPlayService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         stopForeground(true);
         mTrack = null;
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        super.onDestroy();
     }
 
     @Override
@@ -100,32 +99,6 @@ public class MusicPlayService extends Service {
         mPosition = position;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            String action = intent.getAction();
-            if (action != null && action.equals(PLAY_ACTION)) {
-                int num = intent.getIntExtra(TRACK_POSITION, 0);
-                Log.i(LOG_TAG, "GOT POSITION: " + num);
-                playTrack(num);
-            }
-
-            if (action != null && action.equals(PREV_ACTION)) {
-                mPosition = intent.getIntExtra(TRACK_POSITION, 0);
-                Log.i(LOG_TAG, "GOT POSITION: " + mPosition);
-                playTrack(mPosition);
-            }
-
-            if (action != null && action.equals(NEXT_ACTION)) {
-                mPosition = intent.getIntExtra(TRACK_POSITION, 0);
-                Log.i(LOG_TAG, "GOT POSITION: " + mPosition);
-                playTrack(mPosition);
-            }
-        }
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
     public void loadAndPlay(final SpotifyTrack track) {
         String url = track.getUri();
 
@@ -145,6 +118,7 @@ public class MusicPlayService extends Service {
                 handler.postDelayed(UpdateTrack, 100);
 
                 // Put service at Foreground and send out notification
+//                startForeground(NOTIFICATION_ID, buildNotification());
                 startForeground(NOTIFICATION_ID, buildNotification());
 
                 // Broadcast current playing list and current track position
@@ -230,87 +204,23 @@ public class MusicPlayService extends Service {
         }
     };
 
-    private Notification buildNotification() {
-        String title = "";
-        String text = "";
-        if (mTrack != null) {
-            title = mTrack.getArtistName();
-            text = mTrack.getTrackName();
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            String action = intent.getAction();
+            if (action != null
+                    && (action.equals(PLAY_ACTION)
+                    || action.equals(PREV_ACTION)
+                    || action.equals(NEXT_ACTION))) {
+
+                mPosition = intent.getIntExtra(TRACK_POSITION, 0);
+                Log.i(LOG_TAG, "GOT POSITION: " + mPosition);
+                playTrack(mPosition);
+                buildNotification();
+            }
         }
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        //int visibility = pref.getInt(getString(R.string.pref_notifications_visibilty_key), 0);
-        //int visibility = pref.getInt(getString(R.string.pref_notifications_visibilty_key), 0);
-
-        Resources resources = getResources();
-        int drawableID = android.R.drawable.ic_media_play;
-        int stringID = R.string.notification_play;
-        if (mediaPlayer.isPlaying()) {
-            drawableID = android.R.drawable.ic_media_pause;
-            stringID = R.string.notification_pause;
-        }
-
-        Intent notificationIntent = new Intent(this, TopTrackActivity.class);
-        // notificationIntent.putExtra(PlayerDialog.TOP_TRACKS, mTracks);
-        // notificationIntent.putExtra(PlayerDialog.TRACK_POSITION, mPosition);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
-
-        Intent playIntent = new Intent(this, MusicPlayService.class);
-        playIntent.putExtra(TRACK_POSITION, mPosition);
-        playIntent.setAction(PLAY_ACTION);
-        PendingIntent pausePendingIntent = PendingIntent.getService(this, 0,
-                playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent prevIntent = new Intent(this, MusicPlayService.class);
-        prevIntent.putExtra(TRACK_POSITION, selectPrev());
-        prevIntent.setAction(PREV_ACTION);
-        PendingIntent prevPendingIntent = PendingIntent.getService(this, 0,
-                prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent nextIntent = new Intent(this, MusicPlayService.class);
-        nextIntent.putExtra(TRACK_POSITION, selectNext());
-        nextIntent.setAction(NEXT_ACTION);
-        PendingIntent nextPendingIntent = PendingIntent.getService(this, 0,
-                nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        /*
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setVisibility(visibility)
-                .setContentTitle(title)
-                .setContentText(text)
-                        //.setContentIntent(pendingIntent)
-                .setOngoing(true)
-                .addAction(android.R.drawable.ic_media_previous,
-                        resources.getString(R.string.notification_previous),
-                        prevplayIntent)
-                .addAction(mediaPlayer.isPlaying() ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play,
-                        mediaPlayer.isPlaying() ? resources.getString(R.string.notification_pause) : resources.getString(R.string.notification_play),
-                        pplayIntent)
-                .addAction(android.R.drawable.ic_media_next,
-                        resources.getString(R.string.notification_next),
-                        nextplayIntent)
-                .setAutoCancel(true);
-        */
-
-        Notification notification = new NotificationCompat.Builder(this)
-                // Show controls on lock screen even when user hides sensitive content.
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
-                .setSmallIcon(R.drawable.spotify_white)
-                        // Add media control buttons that invoke intents in your media service
-                .addAction(android.R.drawable.ic_media_previous, "Previous", prevPendingIntent) // #0
-                .addAction(android.R.drawable.ic_media_pause, "Pause", pausePendingIntent)  // #1
-                .addAction(android.R.drawable.ic_media_next, "Next", nextPendingIntent)     // #2
-                        // Apply the media style template
-                .setStyle(new NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(1 /* #1: pause button */))
-                        //.setMediaSession(mMediaSession.getSessionToken())
-                        .setContentTitle(title)
-                        .setContentText(text)
-                        //.setLargeIcon(R.mipmap.ic_launcher)
-                        .build();
-        return notification;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     public int selectPrev() {
@@ -325,15 +235,75 @@ public class MusicPlayService extends Service {
 
     public void playNext() {
         mPosition = selectNext();
-        play();
+        playTrack();
     }
 
     public void playPrev() {
         mPosition = selectPrev();
-        play();
+        playTrack();
     }
 
-    public void play() {
+    public void playTrack() {
         playTrack(mPosition);
+    }
+
+    private Notification buildNotification() {
+        Notification notification = new NotificationCompat.Builder(getApplicationContext())
+                .setAutoCancel(true)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setSmallIcon(R.drawable.spotify_white)
+                .setContentTitle(mTrack.getArtistName())
+                .setContentText(mTrack.getTrackName())
+                .build();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            notification.bigContentView = getExpandedView();
+
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(NOTIFICATION_ID, notification);
+
+        return notification;
+    }
+
+    private RemoteViews getExpandedView() {
+        RemoteViews customView = new RemoteViews(getPackageName(), R.layout.notification);
+
+        customView.setTextViewText(R.id.notification_title, mTrack.getArtistName());
+        customView.setTextViewText(R.id.notification_text, mTrack.getTrackName());
+
+        customView.setImageViewResource(R.id.notification_image, R.mipmap.ic_launcher);
+        customView.setImageViewResource(R.id.btnPrevious, android.R.drawable.ic_media_previous);
+
+        if (mediaPlayer.isPlaying())
+            customView.setImageViewResource(R.id.btnPlay, android.R.drawable.ic_media_pause);
+        else
+            customView.setImageViewResource(R.id.btnPlay, android.R.drawable.ic_media_play);
+
+        customView.setImageViewResource(R.id.btnNext, android.R.drawable.ic_media_next);
+
+        Intent playIntent = new Intent(context, MusicPlayService.class);
+        playIntent.putExtra(TRACK_POSITION, mPosition);
+        playIntent.setAction(PLAY_ACTION);
+        PendingIntent pausePendingIntent = PendingIntent.getService(this, 0,
+                playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        customView.setOnClickPendingIntent(R.id.btnPlay, pausePendingIntent);
+
+
+        Intent prevIntent = new Intent(this, MusicPlayService.class);
+        prevIntent.putExtra(TRACK_POSITION, selectPrev());
+        prevIntent.setAction(PREV_ACTION);
+        PendingIntent prevPendingIntent = PendingIntent.getService(this, 0,
+                prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        customView.setOnClickPendingIntent(R.id.btnPrevious, prevPendingIntent);
+
+
+        Intent nextIntent = new Intent(this, MusicPlayService.class);
+        nextIntent.putExtra(TRACK_POSITION, selectNext());
+        nextIntent.setAction(NEXT_ACTION);
+        PendingIntent nextPendingIntent = PendingIntent.getService(this, 0,
+                nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        customView.setOnClickPendingIntent(R.id.btnNext, nextPendingIntent);
+
+        return customView;
     }
 }

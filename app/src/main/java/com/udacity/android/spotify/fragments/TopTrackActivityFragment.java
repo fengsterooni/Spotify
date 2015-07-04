@@ -106,7 +106,6 @@ public class TopTrackActivityFragment extends Fragment {
         super.onResume();
         localBroadcastManager
                 .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_NEW_TRACK));
-        super.onResume();
     }
 
     @Override
