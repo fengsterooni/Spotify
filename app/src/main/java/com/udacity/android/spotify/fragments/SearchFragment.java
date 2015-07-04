@@ -150,7 +150,7 @@ public class SearchFragment extends Fragment {
         android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.TOPTRACK_TAG);
         if (fragment != null)
-            ft.remove(fragment).commit();
+            ft.hide(fragment).commit();
 
         if (items.size() > 0) {
             String image = null;

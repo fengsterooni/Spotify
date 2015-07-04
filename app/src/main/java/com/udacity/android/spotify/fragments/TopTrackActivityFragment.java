@@ -47,7 +47,7 @@ public class TopTrackActivityFragment extends Fragment {
     @InjectView(R.id.listview_tracks)
     ListView mListView;
     private TrackAdapter trackAdapter;
-    private ArrayList<SpotifyTrack> tracks;
+    private ArrayList<SpotifyTrack> mTracks;
     private int mPosition;
 
     static ArrayList<SpotifyTrack> cTracks;
@@ -56,6 +56,8 @@ public class TopTrackActivityFragment extends Fragment {
     static final String STRING_TRACKS = "STRING_TRACKS";
     static final String STRING_ARTIST = "STRING_ARTIST";
     public static final String PLAYER_TAG = "PLAYER";
+
+    private final String LOG_TAG = TopTrackActivityFragment.class.getSimpleName();
 
     String artist;
     Context context;
@@ -80,7 +82,7 @@ public class TopTrackActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         context = getActivity().getApplicationContext();
 
-        tracks = new ArrayList<>();
+        mTracks = new ArrayList<>();
         api = new SpotifyApi();
         spotify = api.getService();
 
@@ -91,8 +93,8 @@ public class TopTrackActivityFragment extends Fragment {
             if (savedInstanceState == null) {
                 searchTopTracks();
             } else {
-                tracks.clear();
-                tracks = savedInstanceState.getParcelableArrayList(STRING_TRACKS);
+                mTracks.clear();
+                mTracks = savedInstanceState.getParcelableArrayList(STRING_TRACKS);
             }
         }
 
@@ -118,7 +120,7 @@ public class TopTrackActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_track, container, false);
         ButterKnife.inject(this, view);
-        trackAdapter = new TrackAdapter(context, tracks);
+        trackAdapter = new TrackAdapter(context, mTracks);
         mListView.setAdapter(trackAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -131,20 +133,22 @@ public class TopTrackActivityFragment extends Fragment {
         return view;
     }
 
-    public void popupPlayer() {
-        popupPlayer(tracks, mPosition);
+    public void popupPlayer(ArrayList<SpotifyTrack> tracks, int position) {
+        mTracks = tracks;
+        mPosition = position;
+        popupPlayer();
     }
 
-    public void popupPlayer(ArrayList<SpotifyTrack> tracks, int position) {
+    public void popupPlayer() {
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        PlayerDialog playerDialog = PlayerDialog.newInstance(tracks, position);
+        PlayerDialog playerDialog = PlayerDialog.newInstance(mTracks, mPosition);
 
         if (MainActivity.ismTwoPane())
             playerDialog.show(fm, PLAYER_TAG);
         else {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .addToBackStack(null)
+            fm.beginTransaction()
                     .replace(R.id.fragment_toptrack, playerDialog, PLAYER_TAG)
+                    .addToBackStack(null)
                     .commit();
         }
     }
@@ -157,7 +161,7 @@ public class TopTrackActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(STRING_ARTIST, artist);
-        outState.putParcelableArrayList(STRING_TRACKS, tracks);
+        outState.putParcelableArrayList(STRING_TRACKS, mTracks);
         super.onSaveInstanceState(outState);
     }
 
@@ -215,7 +219,7 @@ public class TopTrackActivityFragment extends Fragment {
             if (intent.getAction().equals(MusicPlayService.MEDIA_PLAYER_NEW_TRACK)) {
                 cTracks = intent.getParcelableArrayListExtra(MusicPlayService.TOP_TRACK_LIST);
                 cPosition = intent.getIntExtra(MusicPlayService.TRACK_POSITION, 0);
-                Log.i("INFO", "NEW TRACK recorded");
+                Log.i(LOG_TAG, "NEW TRACK recorded");
             }
         }
     };

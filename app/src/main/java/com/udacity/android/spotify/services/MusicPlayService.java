@@ -3,6 +3,7 @@ package com.udacity.android.spotify.services;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -31,6 +32,7 @@ public class MusicPlayService extends Service {
     private static Handler handler = new Handler();
     private final IBinder mBinder = new LocalBinder();
     LocalBroadcastManager broadcastManager;
+    Context context;
 
     // Track play status for each current playing track
     // Intent filter
@@ -51,6 +53,8 @@ public class MusicPlayService extends Service {
     public static String NEXT_ACTION = "com.udacity.android.spotify.action.next";
 
     public static final int NOTIFICATION_ID = 101;
+
+    private final String LOG_TAG = MusicPlayService.class.getSimpleName();
     boolean finished = false;
 
     public MusicPlayService() {
@@ -62,7 +66,8 @@ public class MusicPlayService extends Service {
         super.onCreate();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        broadcastManager = LocalBroadcastManager.getInstance(this);
+        context = getApplicationContext();
+        broadcastManager = LocalBroadcastManager.getInstance(context);
     }
 
     @Override
@@ -101,19 +106,19 @@ public class MusicPlayService extends Service {
             String action = intent.getAction();
             if (action != null && action.equals(PLAY_ACTION)) {
                 int num = intent.getIntExtra(TRACK_POSITION, 0);
-                Log.i("INFO", "GOT POSITION: " + num);
+                Log.i(LOG_TAG, "GOT POSITION: " + num);
                 playTrack(num);
             }
 
             if (action != null && action.equals(PREV_ACTION)) {
                 mPosition = intent.getIntExtra(TRACK_POSITION, 0);
-                Log.i("INFO", "GOT POSITION: " + mPosition);
+                Log.i(LOG_TAG, "GOT POSITION: " + mPosition);
                 playTrack(mPosition);
             }
 
             if (action != null && action.equals(NEXT_ACTION)) {
                 mPosition = intent.getIntExtra(TRACK_POSITION, 0);
-                Log.i("INFO", "GOT POSITION: " + mPosition);
+                Log.i(LOG_TAG, "GOT POSITION: " + mPosition);
                 playTrack(mPosition);
             }
         }

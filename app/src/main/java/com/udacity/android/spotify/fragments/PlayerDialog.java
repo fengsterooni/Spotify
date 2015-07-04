@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     public final static String TOP_TRACKS = "TOP_TRACKS";
     public final static String TRACK_POSITION = "TRACK_POSITION";
+    private final String LOG_TAG = PlayerDialog.class.getSimpleName();
 
     ArrayList<SpotifyTrack> tracks;
     SpotifyTrack track;
@@ -217,6 +219,8 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         musicPlayService = ((MusicPlayService.LocalBinder) service).getService();
+        musicPlayService.setTracks(tracks);
+        musicPlayService.setPosition(position);
     }
 
     @Override
@@ -257,6 +261,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
                 playingTracks = intent.getParcelableArrayListExtra(MusicPlayService.TOP_TRACK_LIST);
                 position = intent.getIntExtra(MusicPlayService.TRACK_POSITION, 0);
                 updateTrack();
+                Log.i(LOG_TAG, "NEW TRACK recorded");
             }
         }
     };

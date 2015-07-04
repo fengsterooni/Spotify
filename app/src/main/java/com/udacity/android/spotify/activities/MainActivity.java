@@ -47,9 +47,12 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         if (id == R.id.action_playing) {
-            TopTrackActivityFragment fragment = (TopTrackActivityFragment) getSupportFragmentManager().findFragmentByTag(TOPTRACK_TAG);
-            if (fragment != null)
-                fragment.popupPlayer();
+            if (mTwoPane) {
+                TopTrackActivityFragment fragment =
+                        (TopTrackActivityFragment) getSupportFragmentManager().findFragmentByTag(TOPTRACK_TAG);
+                if (fragment != null)
+                    fragment.popupCurrent();
+            }
             return true;
         }
 

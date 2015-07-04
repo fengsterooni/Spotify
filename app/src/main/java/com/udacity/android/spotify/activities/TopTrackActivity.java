@@ -35,7 +35,7 @@ public class TopTrackActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
             fragment = TopTrackActivityFragment.newInstatnce(artistID);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_toptrack, fragment)
+                    .add(R.id.fragment_toptrack, fragment, MainActivity.TOPTRACK_TAG)
                     .commit();
         }
     }
