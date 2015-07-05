@@ -46,6 +46,7 @@ public class MusicPlayService extends Service {
     public static final String MEDIA_PLAYER_NEW_TRACK = "MEDIA_PLAYER_NEW_TRACK";
     public static final String TRACK_POSITION = "TRACK_POSITION";
     public static final String TOP_TRACK_LIST = "TOP_TRACK_LIST";
+    public static final String TRACK_ARTIST_ID = "TRACK_ARTIST_ID";
 
     public static String PREV_ACTION = "com.udacity.android.spotify.action.prev";
     public static String PLAY_ACTION = "com.udacity.android.spotify.action.play";
@@ -118,13 +119,13 @@ public class MusicPlayService extends Service {
                 handler.postDelayed(UpdateTrack, 100);
 
                 // Put service at Foreground and send out notification
-//                startForeground(NOTIFICATION_ID, buildNotification());
                 startForeground(NOTIFICATION_ID, buildNotification());
 
                 // Broadcast current playing list and current track position
                 // This will let other activity/fragment to popup current playing track control
                 Intent intent = new Intent(MEDIA_PLAYER_NEW_TRACK);
                 intent.putExtra(TRACK_INFO, mTrack);
+                intent.putExtra(TRACK_ARTIST_ID, mTrack.getArtistId());
                 intent.putExtra(TOP_TRACK_LIST, mTracks);
                 intent.putExtra(TRACK_POSITION, mPosition);
                 broadcastManager.sendBroadcast(intent);
@@ -265,9 +266,9 @@ public class MusicPlayService extends Service {
         return notification;
     }
 
+    // https://github.com/PaulTR/AndroidDemoProjects/tree/master/NotificationsCustomLayout
     private RemoteViews getExpandedView() {
         RemoteViews customView = new RemoteViews(getPackageName(), R.layout.notification);
-
         customView.setTextViewText(R.id.notification_title, mTrack.getArtistName());
         customView.setTextViewText(R.id.notification_text, mTrack.getTrackName());
 

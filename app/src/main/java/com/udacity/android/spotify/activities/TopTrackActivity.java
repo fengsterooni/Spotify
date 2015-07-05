@@ -61,7 +61,8 @@ public class TopTrackActivity extends ActionBarActivity {
         }
 
         if (id == R.id.action_playing) {
-            fragment.popupCurrent();
+            //fragment.popupCurrent();
+            startActivity(new Intent(this, PlayerActivity.class));
             return true;
         }
 

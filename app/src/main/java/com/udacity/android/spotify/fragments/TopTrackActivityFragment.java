@@ -1,16 +1,11 @@
 package com.udacity.android.spotify.fragments;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +14,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.SpotifyApplication;
 import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
 import com.udacity.android.spotify.models.SpotifyTrack;
-import com.udacity.android.spotify.services.MusicPlayService;
 import com.udacity.android.spotify.utils.Utility;
 
 import java.util.ArrayList;
@@ -59,19 +54,17 @@ public class TopTrackActivityFragment extends Fragment {
 
     private final String LOG_TAG = TopTrackActivityFragment.class.getSimpleName();
 
-    String artist;
+    String artistID;
     Context context;
-
-    LocalBroadcastManager localBroadcastManager;
 
     public TopTrackActivityFragment() {
     }
 
-    public static TopTrackActivityFragment newInstatnce(String artist) {
+    public static TopTrackActivityFragment newInstatnce(String artistID) {
         TopTrackActivityFragment fragment = new TopTrackActivityFragment();
         Bundle args = new Bundle();
-        if (artist != null) {
-            args.putString(TopTrackActivity.ARTIST_ID, artist);
+        if (artistID != null) {
+            args.putString(TopTrackActivity.ARTIST_ID, artistID);
             fragment.setArguments(args);
         }
         return fragment;
@@ -88,7 +81,7 @@ public class TopTrackActivityFragment extends Fragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            artist = args.getString(TopTrackActivity.ARTIST_ID);
+            artistID = args.getString(TopTrackActivity.ARTIST_ID);
 
             if (savedInstanceState == null) {
                 searchTopTracks();
@@ -97,21 +90,6 @@ public class TopTrackActivityFragment extends Fragment {
                 mTracks = savedInstanceState.getParcelableArrayList(STRING_TRACKS);
             }
         }
-
-        localBroadcastManager = LocalBroadcastManager.getInstance(context);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        localBroadcastManager
-                .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_NEW_TRACK));
-    }
-
-    @Override
-    public void onPause() {
-        localBroadcastManager.unregisterReceiver(receiver);
-        super.onPause();
     }
 
     @Override
@@ -153,13 +131,16 @@ public class TopTrackActivityFragment extends Fragment {
     }
 
     public void popupCurrent() {
+        cTracks = SpotifyApplication.getAppTracks();
+        cPosition = SpotifyApplication.getAppPosition();
+
         if (cTracks != null && cTracks.size() > 0)
             popupPlayer(cTracks, cPosition);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(STRING_ARTIST, artist);
+        outState.putString(STRING_ARTIST, artistID);
         outState.putParcelableArrayList(STRING_TRACKS, mTracks);
         super.onSaveInstanceState(outState);
     }
@@ -172,7 +153,7 @@ public class TopTrackActivityFragment extends Fragment {
             String code = pref.getString(getString(R.string.pref_list_country_code_key), Locale.getDefault().getCountry());
             final Map<String, Object> options = new HashMap<>();
             options.put(spotify.COUNTRY, code);
-            spotify.getArtistTopTrack(artist, options, new Callback<Tracks>() {
+            spotify.getArtistTopTrack(artistID, options, new Callback<Tracks>() {
                 @Override
                 public void success(final Tracks tracks, Response response) {
                     getActivity().runOnUiThread(new Runnable() {
@@ -185,8 +166,14 @@ public class TopTrackActivityFragment extends Fragment {
                                     if (track.album.images.size() > 0)
                                         image = track.album.images.get(0).url;
 
-                                    SpotifyTrack newTrack = new SpotifyTrack(track.id, track.artists.get(0).name,
-                                            track.name, track.album.name, image, track.preview_url);
+                                    SpotifyTrack newTrack = new SpotifyTrack(
+                                            track.id,
+                                            artistID,
+                                            track.artists.get(0).name,
+                                            track.name,
+                                            track.album.name,
+                                            image,
+                                            track.preview_url);
 
                                     trackAdapter.add(newTrack);
                                     image = null;
@@ -211,15 +198,4 @@ public class TopTrackActivityFragment extends Fragment {
             });
         }
     }
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MusicPlayService.MEDIA_PLAYER_NEW_TRACK)) {
-                cTracks = intent.getParcelableArrayListExtra(MusicPlayService.TOP_TRACK_LIST);
-                cPosition = intent.getIntExtra(MusicPlayService.TRACK_POSITION, 0);
-                Log.i(LOG_TAG, "NEW TRACK recorded");
-            }
-        }
-    };
 }
