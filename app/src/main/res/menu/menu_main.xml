@@ -7,7 +7,7 @@
         android:id="@+id/action_playing"
         android:orderInCategory="100"
         android:icon="@drawable/ic_action_playing"
-        android:title="@string/action_playing"
+        android:title="@string/menu_now_playing"
         app:showAsAction="always" />
 
     <item

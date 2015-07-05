@@ -1,6 +1,7 @@
 package com.udacity.android.spotify.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,9 +14,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.SpotifyApplication;
 import com.udacity.android.spotify.activities.MainActivity;
+import com.udacity.android.spotify.activities.PlayerActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
 import com.udacity.android.spotify.models.SpotifyTrack;
@@ -124,10 +127,16 @@ public class TopTrackActivityFragment extends Fragment {
         if (MainActivity.ismTwoPane())
             playerDialog.show(fm, PLAYER_TAG);
         else {
+            /*
             fm.beginTransaction()
                     .replace(R.id.fragment_toptrack, playerDialog, PLAYER_TAG)
                     .addToBackStack(null)
                     .commit();
+                    */
+            Intent intent = new Intent(getActivity(), PlayerActivity.class);
+            intent.putExtra(PlayerDialog.TOP_TRACKS, mTracks);
+            intent.putExtra(PlayerDialog.TRACK_POSITION, mPosition);
+            startActivity(intent);
         }
     }
 
@@ -148,7 +157,12 @@ public class TopTrackActivityFragment extends Fragment {
 
     private void searchTopTracks() {
         if (!NetworkUtils.isNetworkAvailable(context)) {
-            Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
+            new MaterialDialog.Builder(context)
+                    .title(R.string.no_network_title)
+                    .content(R.string.no_network_message)
+                    .positiveText(R.string.OK)
+                    .show();
         } else {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String code = pref.getString(getString(R.string.pref_list_country_code_key), Locale.getDefault().getCountry());
@@ -190,11 +204,14 @@ public class TopTrackActivityFragment extends Fragment {
 
                 @Override
                 public void failure(final RetrofitError error) {
-                    // Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
-
                     getActivity().runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(context, error.getMessage(), Toast.LENGTH_LONG).show();
+                            // Toast.makeText(context, error.getMessage(), Toast.LENGTH_LONG).show();
+                            new MaterialDialog.Builder(context)
+                                    .title(error.getMessage())
+                                    .content(error.getMessage())
+                                    .positiveText(R.string.OK)
+                                    .show();
                         }
                     });
                 }

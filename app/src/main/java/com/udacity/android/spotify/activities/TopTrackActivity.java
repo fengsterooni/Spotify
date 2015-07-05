@@ -8,7 +8,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.SpotifyApplication;
+import com.udacity.android.spotify.fragments.PlayerDialog;
 import com.udacity.android.spotify.fragments.TopTrackActivityFragment;
+import com.udacity.android.spotify.models.SpotifyTrack;
+
+import java.util.ArrayList;
 
 
 public class TopTrackActivity extends ActionBarActivity {
@@ -61,9 +66,12 @@ public class TopTrackActivity extends ActionBarActivity {
         }
 
         if (id == R.id.action_playing) {
-            //fragment.popupCurrent();
-            startActivity(new Intent(this, PlayerActivity.class));
-            return true;
+            ArrayList<SpotifyTrack> cTracks = SpotifyApplication.getAppTracks();
+            int cPosition = SpotifyApplication.getAppPosition();
+            Intent intent = new Intent(this, PlayerActivity.class);
+            intent.putExtra(PlayerDialog.TOP_TRACKS, cTracks);
+            intent.putExtra(PlayerDialog.TRACK_POSITION, cPosition);
+            startActivity(intent);
         }
 
         //noinspection SimplifiableIfStatement

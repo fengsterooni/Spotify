@@ -52,7 +52,7 @@ public class TrackAdapter extends ArrayAdapter<SpotifyTrack> {
         if (track.getProfileImage() != null)
             Picasso.with(getContext()).load(track.getProfileImage()).into(viewHolder.profileImage);
         else
-            viewHolder.profileImage.setImageResource(R.mipmap.ic_launcher);
+            viewHolder.profileImage.setImageResource(R.drawable.spotify);
 
         return convertView;
     }

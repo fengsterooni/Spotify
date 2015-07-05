@@ -18,7 +18,24 @@ public class SpotifyApplication extends Application {
     private static String appArtistID;
     private static SpotifyTrack appTrack;
     private static int appPosition;
+    private static boolean isPlaying;
     LocalBroadcastManager localBroadcastManager;
+
+    public static boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public static SpotifyTrack getAppTrack() {
+        return appTrack;
+    }
+
+    public static int getAppPosition() {
+        return appPosition;
+    }
+
+    public static ArrayList<SpotifyTrack> getAppTracks() {
+        return appTracks;
+    }
 
     @Override
     public void onCreate() {
@@ -37,14 +54,6 @@ public class SpotifyApplication extends Application {
         super.onTerminate();
     }
 
-    public static int getAppPosition() {
-        return appPosition;
-    }
-
-    public static ArrayList<SpotifyTrack> getAppTracks() {
-        return appTracks;
-    }
-
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -52,6 +61,8 @@ public class SpotifyApplication extends Application {
                 appTrack = intent.getParcelableExtra(MusicPlayService.TRACK_INFO);
                 appTracks = intent.getParcelableArrayListExtra(MusicPlayService.TOP_TRACK_LIST);
                 appPosition = intent.getIntExtra(MusicPlayService.TRACK_POSITION, 0);
+                if (appTrack != null)
+                    isPlaying = true;
             }
         }
     };

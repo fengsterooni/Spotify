@@ -52,7 +52,7 @@ public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
         if (artist.getImage() != null)
             Picasso.with(getContext()).load(artist.getImage()).into(viewHolder.profileImage);
         else
-            viewHolder.profileImage.setImageResource(R.mipmap.ic_launcher);
+            viewHolder.profileImage.setImageResource(R.drawable.spotify);
 
         return convertView;
     }

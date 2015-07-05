@@ -13,8 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.adapters.ArtistAdapter;
@@ -118,7 +118,12 @@ public class SearchFragment extends Fragment {
 
     private void searchArtists() {
         if (!NetworkUtils.isNetworkAvailable(context)) {
-            Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
+            new MaterialDialog.Builder(context)
+                    .title(R.string.no_network_title)
+                    .content(R.string.no_network_message)
+                    .positiveText(R.string.OK)
+                    .show();
         } else {
             spotify.searchArtists(mArtistsString, new Callback<ArtistsPager>() {
                 @Override
@@ -137,7 +142,12 @@ public class SearchFragment extends Fragment {
                         @Override
                         public void run() {
                             // showErrorMessage(error.getMessage());
-                            Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            new MaterialDialog.Builder(context)
+                                    .title(error.getMessage())
+                                    .content(error.getMessage())
+                                    .positiveText(R.string.OK)
+                                    .show();
                         }
                     });
                 }
@@ -150,7 +160,8 @@ public class SearchFragment extends Fragment {
         android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.TOPTRACK_TAG);
         if (fragment != null)
-            ft.hide(fragment).commit();
+            // ft.hide(fragment).commit();
+            ft.remove(fragment).commit();
 
         if (items.size() > 0) {
             String image = null;
@@ -162,7 +173,12 @@ public class SearchFragment extends Fragment {
                 image = null;
             }
         } else {
-            Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(context, "No artist found. Please refine your search", Toast.LENGTH_SHORT).show();
+            new MaterialDialog.Builder(context)
+                    .title(R.string.no_artist_title)
+                    .content(R.string.no_artist_message)
+                    .positiveText(R.string.OK)
+                    .show();
         }
     }
 

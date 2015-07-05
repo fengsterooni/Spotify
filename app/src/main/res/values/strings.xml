@@ -5,11 +5,10 @@
     <string name="action_settings">Settings</string>
 
     <string name="title_activity_top_track">Top 10 Tracks</string>
-    <string name="title_activity_player">PlayerActivity</string>
+    <string name="title_activity_player">Spotify Streamer</string>
 
     <string name="action_playing">Now Playing</string>
     <string name="title_activity_preference">PreferenceActivity</string>
-
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Country Code List preference -->
@@ -30,4 +29,22 @@
     <string name="notification_pause">Pause</string>
     <string name="notification_previous">Prev</string>
     <string name="notification_next">Next</string>
+
+    <!-- Strings for dialogs -->
+    <string name="no_network_title">No Network</string>
+    <string name="no_network_message">No Internet, please check your network connection</string>
+
+    <string name="no_artist_title">No Artist Found</string>
+    <string name="no_artist_message">No artist found. Please refine your search</string>
+
+    <string name="no_track_title">No Tracks Found</string>
+    <string name="no_track_message">No tracks found. Please check other artist</string>
+
+    <string name="no_music_title">No Music Playing</string>
+    <string name="no_music_message">No music playing, start Spotify!</string>
+
+    <string name="OK">OK</string>
+
+    <string name="menu_now_playing">Now Playing</string>
+    <string name="menu_share">Share</string>
 </resources>
