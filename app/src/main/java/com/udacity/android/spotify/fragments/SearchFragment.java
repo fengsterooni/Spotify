@@ -19,7 +19,7 @@ import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.adapters.ArtistAdapter;
 import com.udacity.android.spotify.models.SpotifyArtist;
-import com.udacity.android.spotify.utils.Utility;
+import com.udacity.android.spotify.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +117,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchArtists() {
-        if (!Utility.isNetworkAvailable(context)) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
             Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
         } else {
             spotify.searchArtists(mArtistsString, new Callback<ArtistsPager>() {

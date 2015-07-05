@@ -9,6 +9,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.udacity.android.spotify.models.SpotifyTrack;
 import com.udacity.android.spotify.services.MusicPlayService;
+import com.udacity.android.spotify.utils.ImageUtils;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,9 @@ public class SpotifyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        ImageUtils.setupMemoryCache();
+
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager
                 .registerReceiver(receiver, new IntentFilter(MusicPlayService.MEDIA_PLAYER_NEW_TRACK));
@@ -37,16 +41,8 @@ public class SpotifyApplication extends Application {
         return appPosition;
     }
 
-    public static SpotifyTrack getAppTrack() {
-        return appTrack;
-    }
-
     public static ArrayList<SpotifyTrack> getAppTracks() {
         return appTracks;
-    }
-
-    public static String getAppArtistID() {
-        return appArtistID;
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {

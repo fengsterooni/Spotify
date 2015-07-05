@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -21,6 +22,7 @@ import android.widget.RemoteViews;
 
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.models.SpotifyTrack;
+import com.udacity.android.spotify.utils.ImageUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -274,8 +276,17 @@ public class MusicPlayService extends Service {
         customView.setTextViewText(R.id.notification_title, mTrack.getArtistName());
         customView.setTextViewText(R.id.notification_text, mTrack.getTrackName());
 
-        customView.setImageViewResource(R.id.notification_image, R.mipmap.ic_launcher);
-        customView.setImageViewResource(R.id.btnPrevious, android.R.drawable.ic_media_previous);
+        Bitmap artWork = ImageUtils.getFromImageCache(mTrack.getProfileImage());
+
+        if (artWork != null) {
+            customView.setImageViewBitmap(R.id.notification_image, artWork);
+        } else {
+            customView.setImageViewResource(
+                    R.id.notification_image, R.mipmap.ic_launcher);
+        }
+
+        customView.setImageViewResource(
+                R.id.btnPrevious, android.R.drawable.ic_media_previous);
 
         if (mediaPlayer.isPlaying())
             customView.setImageViewResource(R.id.btnPlay, android.R.drawable.ic_media_pause);
@@ -287,24 +298,34 @@ public class MusicPlayService extends Service {
         Intent playIntent = new Intent(context, MusicPlayService.class);
         playIntent.putExtra(TRACK_POSITION, mPosition);
         playIntent.setAction(PLAY_ACTION);
-        PendingIntent pausePendingIntent = PendingIntent.getService(this, 0,
-                playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pausePendingIntent =
+                PendingIntent.getService(
+                        this,
+                        0,
+                        playIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
         customView.setOnClickPendingIntent(R.id.btnPlay, pausePendingIntent);
-
 
         Intent prevIntent = new Intent(this, MusicPlayService.class);
         prevIntent.putExtra(TRACK_POSITION, selectPrev());
         prevIntent.setAction(PREV_ACTION);
-        PendingIntent prevPendingIntent = PendingIntent.getService(this, 0,
-                prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent prevPendingIntent =
+                PendingIntent.getService(
+                        this,
+                        0,
+                        prevIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
         customView.setOnClickPendingIntent(R.id.btnPrevious, prevPendingIntent);
-
 
         Intent nextIntent = new Intent(this, MusicPlayService.class);
         nextIntent.putExtra(TRACK_POSITION, selectNext());
         nextIntent.setAction(NEXT_ACTION);
-        PendingIntent nextPendingIntent = PendingIntent.getService(this, 0,
-                nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent nextPendingIntent =
+                PendingIntent.getService(
+                        this,
+                        0,
+                        nextIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
         customView.setOnClickPendingIntent(R.id.btnNext, nextPendingIntent);
 
         return customView;

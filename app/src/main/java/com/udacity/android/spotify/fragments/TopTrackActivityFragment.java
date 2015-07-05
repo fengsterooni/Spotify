@@ -19,7 +19,8 @@ import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
 import com.udacity.android.spotify.models.SpotifyTrack;
-import com.udacity.android.spotify.utils.Utility;
+import com.udacity.android.spotify.utils.ImageUtils;
+import com.udacity.android.spotify.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -146,7 +147,7 @@ public class TopTrackActivityFragment extends Fragment {
     }
 
     private void searchTopTracks() {
-        if (!Utility.isNetworkAvailable(context)) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
             Toast.makeText(context, "No Internet, please check your network connection", Toast.LENGTH_SHORT).show();
         } else {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -163,8 +164,10 @@ public class TopTrackActivityFragment extends Fragment {
                             if (tracks.tracks.size() > 0) {
                                 String image = null;
                                 for (Track track : tracks.tracks) {
-                                    if (track.album.images.size() > 0)
+                                    if (track.album.images.size() > 0) {
                                         image = track.album.images.get(0).url;
+                                        ImageUtils.getFromImageCache(image);
+                                    }
 
                                     SpotifyTrack newTrack = new SpotifyTrack(
                                             track.id,
