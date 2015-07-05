@@ -8,8 +8,8 @@
     </string-array>
 
     <string-array name="pref_notification_visibility_values">
-        <item>Notification.VISIBILITY_PRIVATE</item>
-        <item>Notification.VISIBILITY_PUBLIC</item>
-        <item>Notification.VISIBILITY_SECRET</item>
+        <item>PRIVATE</item>
+        <item>PUBLIC</item>
+        <item>SECRET</item>
     </string-array>
 </resources>

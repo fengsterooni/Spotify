@@ -6,12 +6,14 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -251,7 +253,7 @@ public class MusicPlayService extends Service {
     private Notification buildNotification() {
         Notification notification = new NotificationCompat.Builder(getApplicationContext())
                 .setAutoCancel(true)
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setVisibility(getNotificationVisibility())
                 .setSmallIcon(R.drawable.spotify_white)
                 .setContentTitle(mTrack.getArtistName())
                 .setContentText(mTrack.getTrackName())
@@ -306,5 +308,31 @@ public class MusicPlayService extends Service {
         customView.setOnClickPendingIntent(R.id.btnNext, nextPendingIntent);
 
         return customView;
+    }
+
+    int getNotificationVisibility() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        String value = pref.getString(getString(
+                R.string.pref_notifications_visibilty_key), "0");
+
+        int visibility = 0;
+        switch (value) {
+
+            case "PUBLIC":
+                visibility = Notification.VISIBILITY_PUBLIC;
+                break;
+
+            case "PRIVATE":
+                visibility = Notification.VISIBILITY_PRIVATE;
+                break;
+
+            case "SECRET":
+                visibility = Notification.VISIBILITY_SECRET;
+                break;
+        }
+
+        Log.i(LOG_TAG, "Current visibility is set to: " + value);
+
+        return visibility;
     }
 }
