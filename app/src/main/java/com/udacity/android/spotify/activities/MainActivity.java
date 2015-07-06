@@ -131,7 +131,8 @@ public class MainActivity extends ActionBarActivity
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/html");
         // Attach share event to the menu item provider
-        provider.setShareIntent(shareIntent);
+        if (provider != null)
+            provider.setShareIntent(shareIntent);
     }
 
     @Override

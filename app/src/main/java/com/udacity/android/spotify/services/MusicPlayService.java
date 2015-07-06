@@ -149,6 +149,7 @@ public class MusicPlayService extends Service {
                 intent.putExtra(TRACK_PROGRESS, 0.0);
                 intent.putExtra(TRACK_DURATION, duration);
                 broadcastManager.sendBroadcast(intent);
+                buildNotification();
                 finished = true;
             }
         });
@@ -219,7 +220,6 @@ public class MusicPlayService extends Service {
                     || action.equals(NEXT_ACTION))) {
 
                 mPosition = intent.getIntExtra(TRACK_POSITION, 0);
-                Log.i(LOG_TAG, "GOT POSITION: " + mPosition);
                 playTrack(mPosition);
                 buildNotification();
             }

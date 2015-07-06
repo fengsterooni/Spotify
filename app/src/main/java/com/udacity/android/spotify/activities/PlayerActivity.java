@@ -17,7 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class PlayerActivity extends ActionBarActivity implements PlayerDialog.ReadyToShare{
+public class PlayerActivity extends ActionBarActivity implements PlayerDialog.ReadyToShare {
     PlayerDialog playerDialog;
     ArrayList<SpotifyTrack> mTracks;
     int mPosition;
@@ -61,6 +61,11 @@ public class PlayerActivity extends ActionBarActivity implements PlayerDialog.Re
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == android.R.id.home) {
+            super.onBackPressed();
+            return true;
+        }
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -84,7 +89,8 @@ public class PlayerActivity extends ActionBarActivity implements PlayerDialog.Re
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/html");
         // Attach share event to the menu item provider
-        provider.setShareIntent(shareIntent);
+        if (provider != null)
+            provider.setShareIntent(shareIntent);
     }
 
     @Override
