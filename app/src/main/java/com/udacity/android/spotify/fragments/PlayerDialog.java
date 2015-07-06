@@ -233,6 +233,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(MusicPlayService.MEDIA_PLAYER_STATUS)) {
                 playing = intent.getParcelableExtra(MusicPlayService.TRACK_INFO);
+                ((ReadyToShare) getActivity()).onReadyToShare();
                 if (playing.getId().equals(track.getId())) {
                     double progress = intent.getDoubleExtra(MusicPlayService.TRACK_PROGRESS, 0.0);
                     double duration = intent.getDoubleExtra(MusicPlayService.TRACK_DURATION, 0.0);
@@ -270,5 +271,9 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
+    }
+
+    public interface ReadyToShare {
+        void onReadyToShare();
     }
 }
