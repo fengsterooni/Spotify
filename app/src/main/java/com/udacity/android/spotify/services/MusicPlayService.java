@@ -259,6 +259,12 @@ public class MusicPlayService extends Service {
                 .setSmallIcon(R.drawable.spotify_white)
                 .setContentTitle(mTrack.getArtistName())
                 .setContentText(mTrack.getTrackName())
+                // http://stackoverflow.com/questions/16032031/android-remove-notificationcreated-by-mnotifybuilder-on-click
+                .setContentIntent(PendingIntent.getActivity(
+                        getApplicationContext(),
+                        0,
+                        new Intent(),
+                        PendingIntent.FLAG_CANCEL_CURRENT))
                 .build();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
