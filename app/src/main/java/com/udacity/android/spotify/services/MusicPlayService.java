@@ -120,7 +120,7 @@ public class MusicPlayService extends Service {
             public void onPrepared(MediaPlayer player) {
                 player.start();
                 mTrack = track;
-                handler.postDelayed(UpdateTrack, 100);
+                handler.postDelayed(updateTrack, 100);
 
                 // Put service at Foreground and send out notification
                 startForeground(NOTIFICATION_ID, buildNotification());
@@ -139,7 +139,7 @@ public class MusicPlayService extends Service {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                handler.removeCallbacks(UpdateTrack);
+                handler.removeCallbacks(updateTrack);
                 double duration = mediaPlayer.getDuration();
 
                 // Broadcast current playing status (COMPLETED)
@@ -162,7 +162,7 @@ public class MusicPlayService extends Service {
 
             // Switch to a new track? Load and play
             if (track != mTrack) {
-                handler.removeCallbacks(UpdateTrack);
+                handler.removeCallbacks(updateTrack);
                 mediaPlayer.reset();
                 loadAndPlay(track);
             }
@@ -171,7 +171,7 @@ public class MusicPlayService extends Service {
             if (track == mTrack) {
                 // If track is completed, and user wanted to play again, reset to update progress again
                 if (finished) {
-                    handler.postDelayed(UpdateTrack, 100);
+                    handler.postDelayed(updateTrack, 100);
                     finished = false;
                 }
                 // Resume the same track after pause, no need to load new track
@@ -191,7 +191,7 @@ public class MusicPlayService extends Service {
         }
     }
 
-    private Runnable UpdateTrack = new Runnable() {
+    private Runnable updateTrack = new Runnable() {
         public void run() {
             if (mediaPlayer != null) {
                 double progress = mediaPlayer.getCurrentPosition();
