@@ -24,8 +24,8 @@ import com.udacity.android.spotify.utils.NetworkUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
@@ -37,7 +37,7 @@ import retrofit.client.Response;
 public class SearchFragment extends Fragment {
     private SpotifyApi api;
     private SpotifyService spotify;
-    @InjectView(R.id.listview_artists)
+    @Bind(R.id.listview_artists)
     ListView mListView;
     private ArtistAdapter artistAdapter;
     private ArrayList<SpotifyArtist> artists;
@@ -70,7 +70,7 @@ public class SearchFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
 
         artistAdapter = new ArtistAdapter(context, artists);
         mListView.setAdapter(artistAdapter);

@@ -15,18 +15,18 @@ import com.udacity.android.spotify.models.SpotifyArtist;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
 
     static class ViewHolder {
-        @InjectView(R.id.image)
+        @Bind(R.id.image)
         ImageView profileImage;
-        @InjectView(R.id.name)
+        @Bind(R.id.name)
         TextView name;
 
         ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 

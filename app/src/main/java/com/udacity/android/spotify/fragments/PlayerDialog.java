@@ -29,8 +29,8 @@ import com.udacity.android.spotify.services.MusicPlayService;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
@@ -47,25 +47,25 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     MusicPlayService musicPlayService;
     LocalBroadcastManager localBroadcastManager;
 
-    @InjectView(R.id.artist_name)
+    @Bind(R.id.artist_name)
     TextView artistName;
-    @InjectView(R.id.album_name)
+    @Bind(R.id.album_name)
     TextView albumName;
-    @InjectView(R.id.track_name)
+    @Bind(R.id.track_name)
     TextView trackName;
-    @InjectView(R.id.image)
+    @Bind(R.id.image)
     ImageView image;
-    @InjectView(R.id.btnPrevious)
+    @Bind(R.id.btnPrevious)
     ImageButton btnPrev;
-    @InjectView(R.id.btnPlay)
+    @Bind(R.id.btnPlay)
     ImageButton btnPlay;
-    @InjectView(R.id.btnNext)
+    @Bind(R.id.btnNext)
     ImageButton btnNext;
-    @InjectView(R.id.elapse)
+    @Bind(R.id.elapse)
     TextView elapse;
-    @InjectView(R.id.track_time)
+    @Bind(R.id.track_time)
     TextView trackTime;
-    @InjectView(R.id.progressBar)
+    @Bind(R.id.progressBar)
     ProgressBar progressBar;
 
     public PlayerDialog() {
@@ -139,7 +139,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_player, container, false);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
 
         updateTrack();
 

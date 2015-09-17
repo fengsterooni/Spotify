@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
@@ -43,7 +43,7 @@ import retrofit.client.Response;
 public class TopTrackActivityFragment extends Fragment {
     private SpotifyApi api;
     private SpotifyService spotify;
-    @InjectView(R.id.listview_tracks)
+    @Bind(R.id.listview_tracks)
     ListView mListView;
     private TrackAdapter trackAdapter;
     private ArrayList<SpotifyTrack> mTracks;
@@ -100,7 +100,7 @@ public class TopTrackActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_track, container, false);
-        ButterKnife.inject(this, view);
+        ButterKnife.bind(this, view);
         trackAdapter = new TrackAdapter(context, mTracks);
         mListView.setAdapter(trackAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
