@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 
 public class TopTrackActivity extends ActionBarActivity {
-    static TopTrackActivityFragment fragment;
+    private TopTrackActivityFragment fragment;
     public final static String ARTIST_ID = "ARTIST_ID";
     public final static String ARTIST_NAME = "ARTIST_NAME";
 
