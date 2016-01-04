@@ -41,6 +41,9 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder
             Picasso.with(context).load(imageUrl).into(profileImage);
         }
 
+        public void setImageResource(int resourceID) {
+            profileImage.setImageResource(resourceID);
+        }
     }
 
     public ArtistAdapter(List<SpotifyArtist> artists) {
@@ -59,12 +62,12 @@ public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder
         final SpotifyArtist artist = mArtists.get(position);
 
         viewHolder.setName(artist.getName());
-        viewHolder.profileImage.setImageResource(android.R.color.transparent);
+        viewHolder.setImageResource(android.R.color.transparent);
 
         if (artist.getImage() != null)
             viewHolder.setProfileImage(artist.getImage());
         else
-            viewHolder.profileImage.setImageResource(R.drawable.spotify);
+            viewHolder.setImageResource(R.drawable.spotify);
     }
 
     @Override

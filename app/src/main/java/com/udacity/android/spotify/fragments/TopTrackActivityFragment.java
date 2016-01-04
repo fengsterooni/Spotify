@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -22,6 +25,7 @@ import com.udacity.android.spotify.activities.PlayerActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
 import com.udacity.android.spotify.models.SpotifyTrack;
+import com.udacity.android.spotify.utils.DividerItemDecoration;
 import com.udacity.android.spotify.utils.ImageUtils;
 import com.udacity.android.spotify.utils.NetworkUtils;
 
@@ -30,8 +34,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
@@ -40,11 +44,11 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class TopTrackActivityFragment extends Fragment {
+public class TopTrackActivityFragment extends Fragment implements RecyclerView.OnItemTouchListener {
     private SpotifyApi api;
     private SpotifyService spotify;
     @Bind(R.id.listview_tracks)
-    ListView mListView;
+    RecyclerView mRecyclerView;
     private TrackAdapter trackAdapter;
     private ArrayList<SpotifyTrack> mTracks;
     private int mPosition;
@@ -60,6 +64,7 @@ public class TopTrackActivityFragment extends Fragment {
 
     String artistID;
     Context context;
+    private GestureDetectorCompat gDetector;
 
     public TopTrackActivityFragment() {
     }
@@ -101,13 +106,31 @@ public class TopTrackActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_track, container, false);
         ButterKnife.bind(this, view);
-        trackAdapter = new TrackAdapter(context, mTracks);
-        mListView.setAdapter(trackAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setVerticalScrollBarEnabled(true);
+        mRecyclerView.addOnItemTouchListener(this);
+
+        trackAdapter = new TrackAdapter(mTracks);
+        mRecyclerView.setAdapter(trackAdapter);
+
+        RecyclerView.ItemDecoration itemDecoration =
+                new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST);
+        mRecyclerView.addItemDecoration(itemDecoration);
+
+        gDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
+
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
+                int position = mRecyclerView.getChildPosition(view);
+
+                if (position < 0) return false;
                 mPosition = position;
                 popupPlayer();
+                return super.onSingleTapConfirmed(e);
             }
         });
 
@@ -127,12 +150,6 @@ public class TopTrackActivityFragment extends Fragment {
         if (MainActivity.ismTwoPane())
             playerDialog.show(fm, PLAYER_TAG);
         else {
-            /*
-            fm.beginTransaction()
-                    .replace(R.id.fragment_toptrack, playerDialog, PLAYER_TAG)
-                    .addToBackStack(null)
-                    .commit();
-                    */
             Intent intent = new Intent(getActivity(), PlayerActivity.class);
             intent.putExtra(PlayerDialog.TOP_TRACKS, mTracks);
             intent.putExtra(PlayerDialog.TRACK_POSITION, mPosition);
@@ -174,7 +191,7 @@ public class TopTrackActivityFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            trackAdapter.clear();
+                            mTracks.clear();
                             if (tracks.tracks.size() > 0) {
                                 String image = null;
                                 for (Track track : tracks.tracks) {
@@ -192,12 +209,14 @@ public class TopTrackActivityFragment extends Fragment {
                                             image,
                                             track.preview_url);
 
-                                    trackAdapter.add(newTrack);
+                                    mTracks.add(newTrack);
                                     image = null;
                                 }
                             } else {
                                 Toast.makeText(context, "No tracks found. Please check other artist.", Toast.LENGTH_SHORT).show();
                             }
+
+                            trackAdapter.notifyDataSetChanged();
                         }
                     });
                 }
@@ -217,5 +236,21 @@ public class TopTrackActivityFragment extends Fragment {
                 }
             });
         }
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+        gDetector.onTouchEvent(e);
+        return false;
+    }
+
+    @Override
+    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+    }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
     }
 }

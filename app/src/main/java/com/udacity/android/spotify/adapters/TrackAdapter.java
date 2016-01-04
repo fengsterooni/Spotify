@@ -1,10 +1,10 @@
 package com.udacity.android.spotify.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,46 +14,70 @@ import com.udacity.android.spotify.models.SpotifyTrack;
 
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
-public class TrackAdapter extends ArrayAdapter<SpotifyTrack> {
+public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> {
+    private List<SpotifyTrack> mTracks;
 
-    static class ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private static Context context;
         @Bind(R.id.image)ImageView profileImage;
         @Bind(R.id.albumName)TextView albumName;
         @Bind(R.id.trackName)TextView trackName;
 
         ViewHolder(View view) {
+            super(view);
+            context = view.getContext();
             ButterKnife.bind(this, view);
+        }
+
+        public void setAlbumName(CharSequence text) {
+            albumName.setText(text);
+        }
+
+        public void setTrackName(CharSequence text) {
+            trackName.setText(text);
+        }
+
+        public void setProfileImage(String imageUrl) {
+            Picasso.with(context).load(imageUrl).into(profileImage);
+        }
+
+        public void setImageResource(int resourceID) {
+            profileImage.setImageResource(resourceID);
         }
     }
 
-    public TrackAdapter(Context context, List<SpotifyTrack> tracks) {
-        super(context, android.R.layout.simple_list_item_1, tracks);
+    public TrackAdapter(List<SpotifyTrack> tracks) {
+        this.mTracks = tracks;
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        final SpotifyTrack track = getItem(position);
-        final ViewHolder viewHolder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_track, parent, false);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_track, parent, false);
+        return new ViewHolder(view);
+    }
 
-        viewHolder.albumName.setText(track.getAlbumName());
-        viewHolder.trackName.setText(track.getTrackName());
-        viewHolder.profileImage.setImageResource(android.R.color.transparent);
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        final SpotifyTrack track = mTracks.get(position);
 
-        if (track.getProfileImage() != null)
-            Picasso.with(getContext()).load(track.getProfileImage()).into(viewHolder.profileImage);
+        viewHolder.setTrackName(track.getTrackName());
+        viewHolder.setAlbumName(track.getAlbumName());
+
+        String imageUrl = track.getProfileImage();
+        if (imageUrl != null)
+            viewHolder.setProfileImage(imageUrl);
         else
-            viewHolder.profileImage.setImageResource(R.drawable.spotify);
+            viewHolder.setImageResource(R.drawable.spotify);
 
-        return convertView;
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return mTracks.size();
     }
 }
