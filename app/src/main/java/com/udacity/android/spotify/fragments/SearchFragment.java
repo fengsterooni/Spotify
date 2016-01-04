@@ -22,6 +22,7 @@ import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.adapters.ArtistAdapter;
 import com.udacity.android.spotify.models.SpotifyArtist;
+import com.udacity.android.spotify.utils.DividerItemDecoration;
 import com.udacity.android.spotify.utils.NetworkUtils;
 
 import java.util.ArrayList;
@@ -84,6 +85,10 @@ public class SearchFragment extends Fragment implements RecyclerView.OnItemTouch
 
         artistAdapter = new ArtistAdapter(artists);
         mRecyclerView.setAdapter(artistAdapter);
+
+        RecyclerView.ItemDecoration itemDecoration =
+                new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST);
+        mRecyclerView.addItemDecoration(itemDecoration);
 
         gDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
