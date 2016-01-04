@@ -3,16 +3,19 @@ package com.udacity.android.spotify.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.udacity.android.spotify.R;
@@ -34,16 +37,19 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements RecyclerView.OnItemTouchListener {
     private SpotifyApi api;
     private SpotifyService spotify;
     @Bind(R.id.listview_artists)
-    ListView mListView;
+    // ListView mListView;
+    // @Bind(R.id.listview_artists)
+    RecyclerView mRecyclerView;
     private ArtistAdapter artistAdapter;
     private ArrayList<SpotifyArtist> artists;
     static final String STRING_ARTISTS = "string_artists";
     private String mArtistsString;
     Context context;
+    private GestureDetectorCompat gDetector;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -72,15 +78,34 @@ public class SearchFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, rootView);
 
-        artistAdapter = new ArtistAdapter(context, artists);
-        mListView.setAdapter(artistAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setVerticalScrollBarEnabled(true);
+        mRecyclerView.addOnItemTouchListener(this);
+
+        artistAdapter = new ArtistAdapter(artists);
+        mRecyclerView.setAdapter(artistAdapter);
+
+        gDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                View view = mRecyclerView.findChildViewUnder(e.getX(), e.getY());
+                int position = mRecyclerView.getChildPosition(view);
+                if (position < 0) return false;
                 SpotifyArtist artist = artists.get(position);
                 ((OnItemSelected) getActivity()).onItemSelected(artist.getId(), artist.getName());
+                return super.onSingleTapConfirmed(e);
             }
         });
+
+        // mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        //    @Override
+        //    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //        SpotifyArtist artist = artists.get(position);
+        //        ((OnItemSelected) getActivity()).onItemSelected(artist.getId(), artist.getName());
+        //    }
+        // });
 
         return rootView;
     }
@@ -156,7 +181,8 @@ public class SearchFragment extends Fragment {
     }
 
     private void showArtists(List<Artist> items) {
-        artistAdapter.clear();
+        // artistAdapter.clear();
+        artists.clear();
         android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.TOPTRACK_TAG);
         if (fragment != null)
@@ -169,7 +195,8 @@ public class SearchFragment extends Fragment {
                 if (artist.images.size() > 0) {
                     image = artist.images.get(0).url;
                 }
-                artistAdapter.add(new SpotifyArtist(artist.id, artist.name, image));
+                // artistAdapter.add(new SpotifyArtist(artist.id, artist.name, image));
+                artists.add(new SpotifyArtist(artist.id, artist.name, image));
                 image = null;
             }
         } else {
@@ -187,6 +214,24 @@ public class SearchFragment extends Fragment {
         outState.putParcelableArrayList(STRING_ARTISTS, artists);
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+        gDetector.onTouchEvent(e);
+        return false;
+    }
+
+    @Override
+    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+    }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+    }
+
+
 
     public interface OnItemSelected {
         void onItemSelected(String artistID, String artistName);

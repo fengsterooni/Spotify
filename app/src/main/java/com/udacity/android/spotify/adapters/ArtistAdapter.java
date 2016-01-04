@@ -1,10 +1,10 @@
 package com.udacity.android.spotify.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,51 +14,61 @@ import com.udacity.android.spotify.models.SpotifyArtist;
 
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
-public class ArtistAdapter extends ArrayAdapter<SpotifyArtist> {
+public class ArtistAdapter extends RecyclerView.Adapter<ArtistAdapter.ViewHolder> {
+    private List<SpotifyArtist> mArtists;
 
-    static class ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private static Context context;
         @Bind(R.id.image)
         ImageView profileImage;
         @Bind(R.id.name)
         TextView name;
 
-        ViewHolder(View view) {
+        public ViewHolder(View view) {
+            super(view);
+            context = view.getContext();
             ButterKnife.bind(this, view);
         }
+
+        public void setName(CharSequence text) {
+            name.setText(text);
+        }
+
+        public void setProfileImage(String imageUrl) {
+            Picasso.with(context).load(imageUrl).into(profileImage);
+        }
+
     }
 
-    public ArtistAdapter(Context context, List<SpotifyArtist> artists) {
-        super(context, android.R.layout.simple_list_item_1, artists);
+    public ArtistAdapter(List<SpotifyArtist> artists) {
+        this.mArtists = artists;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        final SpotifyArtist artist = getItem(position);
-        final ViewHolder viewHolder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_artist, parent, false);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_artist, parent, false);
+        return new ViewHolder(view);
+    }
 
-        viewHolder.name.setText(artist.getName());
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        final SpotifyArtist artist = mArtists.get(position);
+
+        viewHolder.setName(artist.getName());
         viewHolder.profileImage.setImageResource(android.R.color.transparent);
 
         if (artist.getImage() != null)
-            Picasso.with(getContext()).load(artist.getImage()).into(viewHolder.profileImage);
+            viewHolder.setProfileImage(artist.getImage());
         else
             viewHolder.profileImage.setImageResource(R.drawable.spotify);
-
-        return convertView;
     }
 
     @Override
-    public int getCount() {
-        return super.getCount();
+    public int getItemCount() {
+        return mArtists.size();
     }
 }
