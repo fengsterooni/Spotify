@@ -41,8 +41,6 @@ public class SearchFragment extends Fragment implements RecyclerView.OnItemTouch
     private SpotifyApi api;
     private SpotifyService spotify;
     @Bind(R.id.listview_artists)
-    // ListView mListView;
-    // @Bind(R.id.listview_artists)
     RecyclerView mRecyclerView;
     private ArtistAdapter artistAdapter;
     private ArrayList<SpotifyArtist> artists;
@@ -98,14 +96,6 @@ public class SearchFragment extends Fragment implements RecyclerView.OnItemTouch
                 return super.onSingleTapConfirmed(e);
             }
         });
-
-        // mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        //    @Override
-        //    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //        SpotifyArtist artist = artists.get(position);
-        //        ((OnItemSelected) getActivity()).onItemSelected(artist.getId(), artist.getName());
-        //    }
-        // });
 
         return rootView;
     }
@@ -207,6 +197,8 @@ public class SearchFragment extends Fragment implements RecyclerView.OnItemTouch
                     .positiveText(R.string.OK)
                     .show();
         }
+
+        artistAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -230,8 +222,6 @@ public class SearchFragment extends Fragment implements RecyclerView.OnItemTouch
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
     }
-
-
 
     public interface OnItemSelected {
         void onItemSelected(String artistID, String artistName);
