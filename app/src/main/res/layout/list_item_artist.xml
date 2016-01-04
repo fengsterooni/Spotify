@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:orientation="horizontal"
-    android:background="@drawable/touch_selector">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="artist"
+            type="com.udacity.android.spotify.models.SpotifyArtist"/>
+    </data>
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:padding="8dp"
-        android:src="@mipmap/ic_launcher" />
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/name"
-        android:gravity="center_vertical"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:fontFamily="sans-serif-condensed"
-        android:paddingLeft="@dimen/component_horizontal_margin"
-        android:text="Artist Name"/>
+        android:layout_height="80dp"
+        android:background="@drawable/touch_selector"
+        android:orientation="horizontal">
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:padding="8dp"
+            android:src="@mipmap/ic_launcher"
+            app:imageUrl="@{artist.image}"/>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-condensed"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/component_horizontal_margin"
+            android:paddingRight="@dimen/component_horizontal_margin"
+            android:text="@{artist.name}"
+            android:textAppearance="?android:textAppearanceMedium"/>
+
+    </LinearLayout>
+</layout>
