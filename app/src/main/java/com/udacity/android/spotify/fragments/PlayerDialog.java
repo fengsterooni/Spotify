@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,8 +28,6 @@ import com.udacity.android.spotify.services.MusicPlayService;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-
-import butterknife.Bind;
 
 public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
@@ -49,26 +46,12 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
     private DialogPlayerBinding binding;
 
-    @Bind(R.id.artist_name)
-    TextView artistName;
-    @Bind(R.id.album_name)
-    TextView albumName;
-    @Bind(R.id.track_name)
-    TextView trackName;
-    @Bind(R.id.image)
-    ImageView image;
-    @Bind(R.id.btnPrevious)
-    ImageButton btnPrev;
-    @Bind(R.id.btnPlay)
-    ImageButton btnPlay;
-    @Bind(R.id.btnNext)
-    ImageButton btnNext;
-    @Bind(R.id.elapse)
-    TextView elapse;
-    @Bind(R.id.track_time)
-    TextView trackTime;
-    @Bind(R.id.progressBar)
-    ProgressBar progressBar;
+    private ImageButton btnPrev;
+    private ImageButton btnPlay;
+    private ImageButton btnNext;
+    private TextView elapse;
+    private TextView trackTime;
+    private ProgressBar progressBar;
 
     public PlayerDialog() {
         // Required empty public constructor
@@ -141,11 +124,14 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_player, container, false);
-        // ButterKnife.bind(this, view);
+        View rootView = binding.getRoot();
 
-        binding.setTrack(track);
-
-        // updateTrack();
+        btnPrev = (ImageButton) rootView.findViewById(R.id.btnPrevious);
+        btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
+        btnNext = (ImageButton) rootView.findViewById(R.id.btnNext);
+        elapse = (TextView) rootView.findViewById(R.id.elapse);
+        trackTime = (TextView) rootView.findViewById(R.id.track_time);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,15 +154,14 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             }
         });
 
-        return binding.getRoot();
+        updateTrack();
+
+        return rootView;
     }
 
     private void updateTrack() {
         if (track != null) {
-//            artistName.setText(" " + track.getArtistName());
-//            albumName.setText(" " + track.getAlbumName());
-//            trackName.setText(" " + track.getTrackName());
-//            Picasso.with(getActivity()).load(track.getProfileImage()).into(image);
+            binding.setTrack(track);
 
             btnPlay.setImageResource(android.R.drawable.ic_media_play);
             elapse.setText(String.format("%02d:%02d", 0, 0));
