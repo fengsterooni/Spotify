@@ -1,127 +1,137 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="track"
+            type="com.udacity.android.spotify.models.SpotifyTrack"/>
+    </data>
 
-    <TextView
-        android:id="@+id/artist_name"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center_horizontal"
-        android:text="Artist Name"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/album_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/artist_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:gravity="center_horizontal"
-        android:lines="1"
-        android:text="Album Name"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/artist_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:text="@{track.artistName}"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"/>
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="360dp"
-        android:layout_height="360dp"
-        android:layout_below="@id/album_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
+        <TextView
+            android:id="@+id/album_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/artist_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:lines="1"
+            android:text="@{track.albumName}"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-    <TextView
-        android:id="@+id/track_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/image"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:ellipsize="end"
-        android:gravity="center_horizontal"
-        android:lines="1"
-        android:text="Track Name"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="360dp"
+            android:layout_height="360dp"
+            android:layout_below="@id/album_name"
+            android:layout_centerHorizontal="true"
+            app:imageUrl="@{track.profileImage}"
+            android:layout_marginTop="16dp"/>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="360dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/track_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" />
+        <TextView
+            android:id="@+id/track_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:lines="1"
+            android:text="@{track.trackName}"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-    <TextView
-        android:id="@+id/elapse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/progressBar"
-        android:layout_below="@id/progressBar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:gravity="center_horizontal"
-        android:lines="1"
-        android:text="00:00"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="360dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/track_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"/>
 
-    <TextView
-        android:id="@+id/track_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@id/progressBar"
-        android:layout_below="@id/progressBar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:gravity="center_horizontal"
-        android:lines="1"
-        android:text="00:00"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/btnPrevious"
+        <TextView
+            android:id="@+id/elapse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="#000000"
-            android:src="@android:drawable/ic_media_previous" />
+            android:layout_alignLeft="@id/progressBar"
+            android:layout_below="@id/progressBar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:lines="1"
+            android:text="00:00"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-        <ImageButton
-            android:id="@+id/btnPlay"
+        <TextView
+            android:id="@+id/track_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="#000000"
-            android:src="@android:drawable/ic_media_play" />
+            android:layout_alignRight="@id/progressBar"
+            android:layout_below="@id/progressBar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:gravity="center_horizontal"
+            android:lines="1"
+            android:text="00:00"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
 
-        <ImageButton
-            android:id="@+id/btnNext"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="#000000"
-            android:src="@android:drawable/ic_media_next" />
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/btnPrevious"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="#000000"
+                android:src="@android:drawable/ic_media_previous"/>
 
-</RelativeLayout>
+            <ImageButton
+                android:id="@+id/btnPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="#000000"
+                android:src="@android:drawable/ic_media_play"/>
+
+            <ImageButton
+                android:id="@+id/btnNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="#000000"
+                android:src="@android:drawable/ic_media_next"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

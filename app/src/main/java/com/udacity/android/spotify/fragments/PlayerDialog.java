@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -124,14 +125,12 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.dialog_player, container, false);
-        View rootView = binding.getRoot();
-
-        btnPrev = (ImageButton) rootView.findViewById(R.id.btnPrevious);
-        btnPlay = (ImageButton) rootView.findViewById(R.id.btnPlay);
-        btnNext = (ImageButton) rootView.findViewById(R.id.btnNext);
-        elapse = (TextView) rootView.findViewById(R.id.elapse);
-        trackTime = (TextView) rootView.findViewById(R.id.track_time);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+        btnPrev = binding.btnPrevious;
+        btnPlay = binding.btnPlay;
+        btnNext = binding.btnNext;
+        elapse = binding.elapse;
+        trackTime = binding.trackTime;
+        progressBar = binding.progressBar;
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,7 +155,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
         updateTrack();
 
-        return rootView;
+        return binding.getRoot();
     }
 
     private void updateTrack() {
@@ -256,6 +255,7 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
         }
     };
 
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
