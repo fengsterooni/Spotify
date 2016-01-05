@@ -3,6 +3,7 @@ package com.udacity.android.spotify.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,7 @@ import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.activities.PlayerActivity;
 import com.udacity.android.spotify.activities.TopTrackActivity;
 import com.udacity.android.spotify.adapters.TrackAdapter;
+import com.udacity.android.spotify.databinding.FragmentTopTrackBinding;
 import com.udacity.android.spotify.models.SpotifyTrack;
 import com.udacity.android.spotify.utils.DividerItemDecoration;
 import com.udacity.android.spotify.utils.ImageUtils;
@@ -34,8 +36,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Track;
@@ -47,24 +47,26 @@ import retrofit.client.Response;
 public class TopTrackActivityFragment extends Fragment implements RecyclerView.OnItemTouchListener {
     private SpotifyApi api;
     private SpotifyService spotify;
-    @Bind(R.id.listview_tracks)
-    RecyclerView mRecyclerView;
+    // @Bind(R.id.listview_tracks)
+    private RecyclerView mRecyclerView;
     private TrackAdapter trackAdapter;
     private ArrayList<SpotifyTrack> mTracks;
     private int mPosition;
 
-    static ArrayList<SpotifyTrack> cTracks;
-    static int cPosition;
+    private static ArrayList<SpotifyTrack> cTracks;
+    private static int cPosition;
 
-    static final String STRING_TRACKS = "STRING_TRACKS";
-    static final String STRING_ARTIST = "STRING_ARTIST";
+    private static final String STRING_TRACKS = "STRING_TRACKS";
+    private static final String STRING_ARTIST = "STRING_ARTIST";
     public static final String PLAYER_TAG = "PLAYER";
 
     private final String LOG_TAG = TopTrackActivityFragment.class.getSimpleName();
 
-    String artistID;
-    Context context;
+    private String artistID;
+    private Context context;
     private GestureDetectorCompat gDetector;
+
+    private FragmentTopTrackBinding binding;
 
     public TopTrackActivityFragment() {
     }
@@ -104,9 +106,8 @@ public class TopTrackActivityFragment extends Fragment implements RecyclerView.O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_top_track, container, false);
-        ButterKnife.bind(this, view);
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_top_track, container, false);
+        mRecyclerView = binding.listviewTracks;
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -134,7 +135,7 @@ public class TopTrackActivityFragment extends Fragment implements RecyclerView.O
             }
         });
 
-        return view;
+        return binding.getRoot();
     }
 
     public void popupPlayer(ArrayList<SpotifyTrack> tracks, int position) {

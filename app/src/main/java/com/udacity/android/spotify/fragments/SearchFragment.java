@@ -1,6 +1,7 @@
 package com.udacity.android.spotify.fragments;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GestureDetectorCompat;
@@ -21,6 +22,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.udacity.android.spotify.R;
 import com.udacity.android.spotify.activities.MainActivity;
 import com.udacity.android.spotify.adapters.ArtistAdapter;
+import com.udacity.android.spotify.databinding.FragmentSearchBinding;
 import com.udacity.android.spotify.models.SpotifyArtist;
 import com.udacity.android.spotify.utils.DividerItemDecoration;
 import com.udacity.android.spotify.utils.NetworkUtils;
@@ -28,8 +30,6 @@ import com.udacity.android.spotify.utils.NetworkUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Artist;
@@ -41,14 +41,15 @@ import retrofit.client.Response;
 public class SearchFragment extends Fragment implements RecyclerView.OnItemTouchListener {
     private SpotifyApi api;
     private SpotifyService spotify;
-    @Bind(R.id.listview_artists)
-    RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private ArtistAdapter artistAdapter;
     private ArrayList<SpotifyArtist> artists;
-    static final String STRING_ARTISTS = "string_artists";
+    private static final String STRING_ARTISTS = "string_artists";
     private String mArtistsString;
-    Context context;
+    private Context context;
     private GestureDetectorCompat gDetector;
+
+    private FragmentSearchBinding binding;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -72,11 +73,12 @@ public class SearchFragment extends Fragment implements RecyclerView.OnItemTouch
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_search, container, false);
-        ButterKnife.bind(this, rootView);
+        // View rootView = inflater.inflate(R.layout.fragment_search, container, false);
+        // ButterKnife.bind(this, rootView);
 
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        mRecyclerView = binding.listviewArtists;
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -102,7 +104,8 @@ public class SearchFragment extends Fragment implements RecyclerView.OnItemTouch
             }
         });
 
-        return rootView;
+        // https://github.com/bingoogolapple/DataBindingNote/blob/master/app/src/main/java/cn/bingoogolapple/databinding/fragment/DemoFragment.java
+        return binding.getRoot();
     }
 
     @Override
