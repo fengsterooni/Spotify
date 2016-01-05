@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
@@ -21,8 +22,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.udacity.android.spotify.R;
+import com.udacity.android.spotify.databinding.DialogPlayerBinding;
 import com.udacity.android.spotify.models.SpotifyTrack;
 import com.udacity.android.spotify.services.MusicPlayService;
 
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 public class PlayerDialog extends DialogFragment implements ServiceConnection {
 
@@ -46,6 +46,8 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     Context context;
     MusicPlayService musicPlayService;
     LocalBroadcastManager localBroadcastManager;
+
+    private DialogPlayerBinding binding;
 
     @Bind(R.id.artist_name)
     TextView artistName;
@@ -138,10 +140,12 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_player, container, false);
-        ButterKnife.bind(this, view);
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_player, container, false);
+        // ButterKnife.bind(this, view);
 
-        updateTrack();
+        binding.setTrack(track);
+
+        // updateTrack();
 
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,15 +168,15 @@ public class PlayerDialog extends DialogFragment implements ServiceConnection {
             }
         });
 
-        return view;
+        return binding.getRoot();
     }
 
     private void updateTrack() {
         if (track != null) {
-            artistName.setText(" " + track.getArtistName());
-            albumName.setText(" " + track.getAlbumName());
-            trackName.setText(" " + track.getTrackName());
-            Picasso.with(getActivity()).load(track.getProfileImage()).into(image);
+//            artistName.setText(" " + track.getArtistName());
+//            albumName.setText(" " + track.getAlbumName());
+//            trackName.setText(" " + track.getTrackName());
+//            Picasso.with(getActivity()).load(track.getProfileImage()).into(image);
 
             btnPlay.setImageResource(android.R.drawable.ic_media_play);
             elapse.setText(String.format("%02d:%02d", 0, 0));
